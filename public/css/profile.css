@@ -1,0 +1,62 @@
+.profile-form {
+  max-width: 600px;
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.skill-tag {
+  background-color: #3498db;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-tag button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.skill-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skill-input-group input {
+  flex: 1;
+}
+
+.work-style-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.work-style-option {
+  padding: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.work-style-option:hover {
+  border-color: #3498db;
+}
+
+.work-style-option.selected {
+  border-color: #3498db;
+  background-color: #ebf5fb;
+}
