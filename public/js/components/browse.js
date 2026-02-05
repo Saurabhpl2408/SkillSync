@@ -48,10 +48,10 @@ async function loadFilters() {
   try {
     allProjects = await getProjects('open');
     const projectFilter = document.getElementById('project-filter');
-    
-    const myProjects = allProjects.filter(p => p.owner_id === currentUserId);
-    
-    myProjects.forEach(project => {
+
+    const myProjects = allProjects.filter((p) => p.owner_id === currentUserId);
+
+    myProjects.forEach((project) => {
       const option = document.createElement('option');
       option.value = project._id;
       option.textContent = project.title;
@@ -68,47 +68,51 @@ async function loadUsers(skillFilter = '', projectId = '') {
 
   try {
     allUsers = await getUsers();
-    let filteredUsers = allUsers.filter(user => user._id !== currentUserId);
+    let filteredUsers = allUsers.filter((user) => user._id !== currentUserId);
 
     if (skillFilter) {
       const searchSkill = skillFilter.toLowerCase();
-      filteredUsers = filteredUsers.filter(user =>
-        (user.skills || []).some(skill =>
+      filteredUsers = filteredUsers.filter((user) =>
+        (user.skills || []).some((skill) =>
           skill.toLowerCase().includes(searchSkill)
         )
       );
     }
 
     if (projectId) {
-      const project = allProjects.find(p => p._id === projectId);
+      const project = allProjects.find((p) => p._id === projectId);
       if (project && project.skills_need) {
         document.getElementById('skill-gap-content').innerHTML = `
           <p><strong>Project:</strong> ${project.title}</p>
           <p><strong>Skills Needed:</strong></p>
           <div class="skills-container">
-            ${project.skills_need.map(skill => `
+            ${project.skills_need
+              .map(
+                (skill) => `
               <span class="skill-tag skill-need">${skill}</span>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
         `;
         skillGapDisplay.style.display = 'block';
 
-        filteredUsers = filteredUsers.filter(user =>
-          (user.skills || []).some(skill =>
-            project.skills_need.some(needed =>
+        filteredUsers = filteredUsers.filter((user) =>
+          (user.skills || []).some((skill) =>
+            project.skills_need.some((needed) =>
               skill.toLowerCase().includes(needed.toLowerCase())
             )
           )
         );
 
         filteredUsers.sort((a, b) => {
-          const aMatches = (a.skills || []).filter(skill =>
-            project.skills_need.some(needed =>
+          const aMatches = (a.skills || []).filter((skill) =>
+            project.skills_need.some((needed) =>
               skill.toLowerCase().includes(needed.toLowerCase())
             )
           ).length;
-          const bMatches = (b.skills || []).filter(skill =>
-            project.skills_need.some(needed =>
+          const bMatches = (b.skills || []).filter((skill) =>
+            project.skills_need.some((needed) =>
               skill.toLowerCase().includes(needed.toLowerCase())
             )
           ).length;
@@ -128,47 +132,70 @@ async function loadUsers(skillFilter = '', projectId = '') {
       return;
     }
 
-    usersGrid.innerHTML = filteredUsers.map(user => {
-      const matchingSkills = projectId
-        ? (user.skills || []).filter(skill => {
-            const project = allProjects.find(p => p._id === projectId);
-            return project && project.skills_need.some(needed =>
-              skill.toLowerCase().includes(needed.toLowerCase())
-            );
-          })
-        : [];
+    usersGrid.innerHTML = filteredUsers
+      .map((user) => {
+        const matchingSkills = projectId
+          ? (user.skills || []).filter((skill) => {
+              const project = allProjects.find((p) => p._id === projectId);
+              return (
+                project &&
+                project.skills_need.some((needed) =>
+                  skill.toLowerCase().includes(needed.toLowerCase())
+                )
+              );
+            })
+          : [];
 
-      return `
+        return `
         <div class="card user-card">
           <h3>${user.name || 'Unnamed User'}</h3>
           <p class="user-email">${user.email || 'No email'}</p>
           
           <div class="skills-container">
-            ${(user.skills || []).map(skill => `
+            ${
+              (user.skills || [])
+                .map(
+                  (skill) => `
               <span class="skill-tag ${matchingSkills.includes(skill) ? 'skill-match' : ''}">${skill}</span>
-            `).join('') || '<span class="no-skills">No skills listed</span>'}
+            `
+                )
+                .join('') || '<span class="no-skills">No skills listed</span>'
+            }
           </div>
 
-          ${user.work_style ? `
+          ${
+            user.work_style
+              ? `
             <div class="work-style-info">
               ${user.work_style.time_preference ? `<span class="work-badge">${user.work_style.time_preference}</span>` : ''}
               ${user.work_style.work_mode ? `<span class="work-badge">${user.work_style.work_mode}</span>` : ''}
             </div>
-          ` : ''}
+          `
+              : ''
+          }
 
-          ${user.github_url ? `
+          ${
+            user.github_url
+              ? `
             <a href="${user.github_url}" target="_blank" class="github-link">View GitHub</a>
-          ` : ''}
+          `
+              : ''
+          }
 
           <div class="user-actions">
             <button class="btn btn-small" data-view-availability="${user._id}">View Availability</button>
-            ${projectId ? `
+            ${
+              projectId
+                ? `
               <button class="btn btn-small" data-send-request="${user._id}" data-project="${projectId}">Send Request</button>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   } catch (error) {
     usersGrid.innerHTML = `<div class="card"><p>Error loading users: ${error.message}</p></div>`;
   }
@@ -207,25 +234,37 @@ export function initBrowseHandlers() {
       const userId = e.target.getAttribute('data-view-availability');
       try {
         const slots = await getAvailability(userId);
-        const user = allUsers.find(u => u._id === userId);
-        
+        const user = allUsers.find((u) => u._id === userId);
+
         if (slots.length === 0) {
-          alert(`${user?.name || 'This user'} has not set their availability yet.`);
+          alert(
+            `${user?.name || 'This user'} has not set their availability yet.`
+          );
           return;
         }
 
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const days = [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+          'Sunday',
+        ];
         const availabilityByDay = {};
-        days.forEach(day => availabilityByDay[day] = []);
-        
-        slots.forEach(slot => {
+        days.forEach((day) => (availabilityByDay[day] = []));
+
+        slots.forEach((slot) => {
           if (availabilityByDay[slot.day]) {
-            availabilityByDay[slot.day].push(`${slot.start_hour}:00 - ${slot.end_hour}:00`);
+            availabilityByDay[slot.day].push(
+              `${slot.start_hour}:00 - ${slot.end_hour}:00`
+            );
           }
         });
 
         let message = `${user?.name || 'User'}'s Availability:\n\n`;
-        days.forEach(day => {
+        days.forEach((day) => {
           if (availabilityByDay[day].length > 0) {
             message += `${day}: ${availabilityByDay[day].join(', ')}\n`;
           }
@@ -245,7 +284,7 @@ export function initBrowseHandlers() {
 
       const toUserId = e.target.getAttribute('data-send-request');
       const projectId = e.target.getAttribute('data-project');
-      const project = allProjects.find(p => p._id === projectId);
+      const project = allProjects.find((p) => p._id === projectId);
 
       const message = prompt('Enter a message for your request:');
       if (message !== null) {

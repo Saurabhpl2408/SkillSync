@@ -64,19 +64,19 @@ async function loadRequests(tab, status = '') {
     }
 
     if (status && tab !== 'all') {
-      requests = requests.filter(r => r.status === status);
+      requests = requests.filter((r) => r.status === status);
     }
 
     const users = await getUsers();
     const projects = await getProjects();
 
     const usersMap = {};
-    users.forEach(user => {
+    users.forEach((user) => {
       usersMap[user._id] = user;
     });
 
     const projectsMap = {};
-    projects.forEach(project => {
+    projects.forEach((project) => {
       projectsMap[project._id] = project;
     });
 
@@ -89,15 +89,20 @@ async function loadRequests(tab, status = '') {
       return;
     }
 
-    requestsList.innerHTML = requests.map(request => {
-      const fromUser = usersMap[request.from_user_id] || { name: 'Unknown User' };
-      const toUser = usersMap[request.to_user_id] || { name: 'Unknown User' };
-      const project = projectsMap[request.project_id] || { title: 'Unknown Project' };
+    requestsList.innerHTML = requests
+      .map((request) => {
+        const fromUser = usersMap[request.from_user_id] || {
+          name: 'Unknown User',
+        };
+        const toUser = usersMap[request.to_user_id] || { name: 'Unknown User' };
+        const project = projectsMap[request.project_id] || {
+          title: 'Unknown Project',
+        };
 
-      const isReceived = request.to_user_id === currentUserId;
-      const isSent = request.from_user_id === currentUserId;
+        const isReceived = request.to_user_id === currentUserId;
+        const isSent = request.from_user_id === currentUserId;
 
-      return `
+        return `
         <div class="card request-card">
           <div class="request-header">
             <h3>${project.title}</h3>
@@ -111,29 +116,46 @@ async function loadRequests(tab, status = '') {
             <p class="request-date"><strong>Date:</strong> ${new Date(request.created_at).toLocaleDateString()}</p>
           </div>
 
-          ${fromUser.skills ? `
+          ${
+            fromUser.skills
+              ? `
             <div class="requester-skills">
               <strong>Requester Skills:</strong>
               <div class="skills-container">
-                ${fromUser.skills.map(skill => `
+                ${fromUser.skills
+                  .map(
+                    (skill) => `
                   <span class="skill-tag">${skill}</span>
-                `).join('')}
+                `
+                  )
+                  .join('')}
               </div>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
 
           <div class="request-actions">
-            ${isReceived && request.status === 'pending' ? `
+            ${
+              isReceived && request.status === 'pending'
+                ? `
               <button class="btn btn-small btn-success" data-accept="${request._id}">Accept</button>
               <button class="btn btn-small btn-danger" data-decline="${request._id}">Decline</button>
-            ` : ''}
-            ${isSent && request.status === 'pending' ? `
+            `
+                : ''
+            }
+            ${
+              isSent && request.status === 'pending'
+                ? `
               <button class="btn btn-small btn-danger" data-cancel="${request._id}">Cancel</button>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   } catch (error) {
     requestsList.innerHTML = `<div class="card"><p>Error loading requests: ${error.message}</p></div>`;
   }
@@ -146,9 +168,9 @@ export function initRequestsHandlers() {
 
   let currentTab = 'received';
 
-  tabs.forEach(tab => {
+  tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
       currentTab = tab.getAttribute('data-tab');
       loadRequests(currentTab, statusFilter.value);

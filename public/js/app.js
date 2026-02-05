@@ -4,18 +4,9 @@ import {
   renderAvailability,
   initAvailabilityHandlers,
 } from './components/availability.js';
-import {
-  renderProjects,
-  initProjectsHandlers,
-} from './components/projects.js';
-import {
-  renderRequests,
-  initRequestsHandlers,
-} from './components/requests.js';
-import {
-  renderBrowse,
-  initBrowseHandlers,
-} from './components/browse.js';
+import { renderProjects, initProjectsHandlers } from './components/projects.js';
+import { renderRequests, initRequestsHandlers } from './components/requests.js';
+import { renderBrowse, initBrowseHandlers } from './components/browse.js';
 
 const app = document.getElementById('app');
 

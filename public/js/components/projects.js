@@ -86,12 +86,12 @@ export function renderProjects(container) {
 
 async function loadProjects(status = '') {
   const projectsList = document.getElementById('projects-list');
-  
+
   try {
     const projects = await getProjects(status);
     const users = await getUsers();
     const usersMap = {};
-    users.forEach(user => {
+    users.forEach((user) => {
       usersMap[user._id] = user;
     });
 
@@ -104,9 +104,10 @@ async function loadProjects(status = '') {
       return;
     }
 
-    projectsList.innerHTML = projects.map(project => {
-      const owner = usersMap[project.owner_id] || { name: 'Unknown User' };
-      return `
+    projectsList.innerHTML = projects
+      .map((project) => {
+        const owner = usersMap[project.owner_id] || { name: 'Unknown User' };
+        return `
         <div class="card project-card" data-id="${project._id}">
           <div class="project-header">
             <h3>${project.title}</h3>
@@ -119,32 +120,49 @@ async function loadProjects(status = '') {
             <div class="skills-section">
               <strong>Has:</strong>
               <div class="skills-container">
-                ${(project.skills_have || []).map(skill => `
+                ${
+                  (project.skills_have || [])
+                    .map(
+                      (skill) => `
                   <span class="skill-tag skill-have">${skill}</span>
-                `).join('') || '<span class="no-skills">None listed</span>'}
+                `
+                    )
+                    .join('') || '<span class="no-skills">None listed</span>'
+                }
               </div>
             </div>
             <div class="skills-section">
               <strong>Needs:</strong>
               <div class="skills-container">
-                ${(project.skills_need || []).map(skill => `
+                ${
+                  (project.skills_need || [])
+                    .map(
+                      (skill) => `
                   <span class="skill-tag skill-need">${skill}</span>
-                `).join('') || '<span class="no-skills">None listed</span>'}
+                `
+                    )
+                    .join('') || '<span class="no-skills">None listed</span>'
+                }
               </div>
             </div>
           </div>
 
           <div class="project-actions">
-            ${project.owner_id === currentUserId ? `
+            ${
+              project.owner_id === currentUserId
+                ? `
               <button class="btn btn-small" data-edit="${project._id}">Edit</button>
               <button class="btn btn-small btn-danger" data-delete="${project._id}">Delete</button>
-            ` : `
+            `
+                : `
               <button class="btn btn-small" data-apply="${project._id}" data-owner="${project.owner_id}">Apply to Join</button>
-            `}
+            `
+            }
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   } catch (error) {
     projectsList.innerHTML = `<div class="card"><p>Error loading projects: ${error.message}</p></div>`;
   }
@@ -180,12 +198,14 @@ export function initProjectsHandlers() {
     }
   });
 
-  document.getElementById('skill-have-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('add-skill-have').click();
-    }
-  });
+  document
+    .getElementById('skill-have-input')
+    .addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-skill-have').click();
+      }
+    });
 
   document.getElementById('add-skill-need').addEventListener('click', () => {
     const input = document.getElementById('skill-need-input');
@@ -197,28 +217,34 @@ export function initProjectsHandlers() {
     }
   });
 
-  document.getElementById('skill-need-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('add-skill-need').click();
-    }
-  });
+  document
+    .getElementById('skill-need-input')
+    .addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-skill-need').click();
+      }
+    });
 
-  document.getElementById('skills-have-container').addEventListener('click', (e) => {
-    if (e.target.matches('[data-remove-have]')) {
-      const skill = e.target.getAttribute('data-remove-have');
-      skillsHave = skillsHave.filter(s => s !== skill);
-      renderSkillsHave();
-    }
-  });
+  document
+    .getElementById('skills-have-container')
+    .addEventListener('click', (e) => {
+      if (e.target.matches('[data-remove-have]')) {
+        const skill = e.target.getAttribute('data-remove-have');
+        skillsHave = skillsHave.filter((s) => s !== skill);
+        renderSkillsHave();
+      }
+    });
 
-  document.getElementById('skills-need-container').addEventListener('click', (e) => {
-    if (e.target.matches('[data-remove-need]')) {
-      const skill = e.target.getAttribute('data-remove-need');
-      skillsNeed = skillsNeed.filter(s => s !== skill);
-      renderSkillsNeed();
-    }
-  });
+  document
+    .getElementById('skills-need-container')
+    .addEventListener('click', (e) => {
+      if (e.target.matches('[data-remove-need]')) {
+        const skill = e.target.getAttribute('data-remove-need');
+        skillsNeed = skillsNeed.filter((s) => s !== skill);
+        renderSkillsNeed();
+      }
+    });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -283,7 +309,8 @@ export function initProjectsHandlers() {
         document.getElementById('form-title').textContent = 'Edit Project';
         document.getElementById('submit-btn').textContent = 'Update Project';
         document.getElementById('project-title').value = project.title;
-        document.getElementById('project-description').value = project.description || '';
+        document.getElementById('project-description').value =
+          project.description || '';
         document.getElementById('project-status').value = project.status;
         document.getElementById('status-group').style.display = 'block';
         skillsHave = project.skills_have || [];
@@ -300,7 +327,7 @@ export function initProjectsHandlers() {
     if (e.target.matches('[data-apply]')) {
       const projectId = e.target.getAttribute('data-apply');
       const ownerId = e.target.getAttribute('data-owner');
-      
+
       if (!currentUserId) {
         alert('Please create a profile first!');
         return;
@@ -340,22 +367,30 @@ export function initProjectsHandlers() {
 
 function renderSkillsHave() {
   const container = document.getElementById('skills-have-container');
-  container.innerHTML = skillsHave.map(skill => `
+  container.innerHTML = skillsHave
+    .map(
+      (skill) => `
     <span class="skill-tag skill-have">
       ${skill}
       <button type="button" data-remove-have="${skill}">&times;</button>
     </span>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function renderSkillsNeed() {
   const container = document.getElementById('skills-need-container');
-  container.innerHTML = skillsNeed.map(skill => `
+  container.innerHTML = skillsNeed
+    .map(
+      (skill) => `
     <span class="skill-tag skill-need">
       ${skill}
       <button type="button" data-remove-need="${skill}">&times;</button>
     </span>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 function resetForm() {
