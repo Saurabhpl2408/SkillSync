@@ -1,0 +1,32 @@
+{
+  "name": "skillsync",
+  "version": "1.0.0",
+  "description": "Find Project Partners Through Complementary Skills, Not Friendship",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saurabhpl2408/SkillSync.git"
+  },
+  "keywords": [],
+  "author": "Prasad Kanade, Saurabh Lohokare",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Saurabhpl2408/SkillSync/issues"
+  },
+  "homepage": "https://github.com/Saurabhpl2408/SkillSync#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongodb": "^7.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "prettier": "^3.8.1"
+  },
+  "type": "module"
+}
