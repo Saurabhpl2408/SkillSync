@@ -13,20 +13,52 @@ const dataDir = join(__dirname, "..", "data");
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 
+const SKILLS_LIST = [
+  "React", "Node.js", "MongoDB", "Express", "JavaScript", "TypeScript",
+  "Python", "Java", "CSS", "HTML", "Vue.js", "Angular", "PostgreSQL",
+  "MySQL", "AWS", "Docker", "GraphQL", "REST API", "Git", "Redux",
+  "Next.js", "Django", "Flask", "TailwindCSS", "Bootstrap", "Figma",
+  "UI Design", "UX Design", "Swift", "Kotlin", "Go", "Rust"
+];
+
+function randomElements(arr, min, max) {
+  const count = Math.floor(Math.random() * (max - min + 1)) + min;
+  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 async function loadJSON(filename) {
   const filePath = join(dataDir, filename);
   const data = await readFile(filePath, "utf-8");
   return JSON.parse(data);
 }
 
-function parseSkills(skills) {
-  if (Array.isArray(skills)) {
-    return skills;
+function getName(user) {
+  const name = user.name || user["name "] || "";
+  if (name && name.trim().length > 0) {
+    return name.trim();
   }
-  if (typeof skills === "string") {
-    return skills.split(",").map((s) => s.trim()).filter(Boolean);
+  return null;
+}
+
+function getSkills(skills) {
+  if (Array.isArray(skills) && skills.length > 0) {
+    return skills.filter(s => typeof s === "string" && s.length < 30);
   }
-  return [];
+  if (typeof skills === "string" && skills.length > 0 && skills.length < 30) {
+    const additionalSkills = randomElements(SKILLS_LIST.filter(s => s !== skills), 1, 4);
+    return [skills, ...additionalSkills];
+  }
+  return randomElements(SKILLS_LIST, 2, 5);
+}
+
+function getGithubUrl(user, index) {
+  const name = getName(user);
+  if (name) {
+    const username = name.toLowerCase().replace(/\s+/g, "");
+    return `https://github.com/${username}${index}`;
+  }
+  return `https://github.com/user${index}`;
 }
 
 async function seed() {
@@ -55,31 +87,45 @@ async function seed() {
     console.log(`  - partner_requests.json: ${requestsRaw.length} records`);
 
     console.log("\nInserting users...");
-    const usersToInsert = usersRaw.map((user) => ({
-      _id: new ObjectId(),
-      name: user.name,
-      email: user.email,
-      skills: parseSkills(user.skills),
-      github_url: user.github_url || "",
-      work_style: {
-        time_preference:
-          user["work_style.time_preference"] ||
-          user.work_style?.time_preference ||
-          "morning",
-        work_mode:
-          user["work_style.work_mode"] ||
-          user.work_style?.work_mode ||
-          "remote",
-        deadline_approach:
-          user["work_style.deadline_approach"] ||
-          user.work_style?.deadline_approach ||
-          "steady",
-      },
-      created_at: new Date(user.created_at || Date.now()),
-    }));
+    const usedEmails = new Set();
+    const usersToInsert = usersRaw.map((user, index) => {
+      let email = user.email;
+      if (!email || usedEmails.has(email)) {
+        email = `user${index + 1}@example.com`;
+      }
+      usedEmails.add(email);
+
+      const name = getName(user);
+
+      return {
+        _id: new ObjectId(),
+        name: name || `User ${index + 1}`,
+        email: email,
+        skills: getSkills(user.skills),
+        github_url: getGithubUrl(user, index),
+        work_style: {
+          time_preference:
+            user["work_style.time_preference"] ||
+            user.work_style?.time_preference ||
+            "morning",
+          work_mode:
+            user["work_style.work_mode"] ||
+            user.work_style?.work_mode ||
+            "remote",
+          deadline_approach:
+            user["work_style.deadline_approach"] ||
+            user.work_style?.deadline_approach ||
+            "steady",
+        },
+        created_at: new Date(user.created_at || Date.now()),
+      };
+    });
 
     await db.collection("users").insertMany(usersToInsert);
     console.log(`Inserted ${usersToInsert.length} users`);
+
+    console.log("\nSample user:");
+    console.log(JSON.stringify(usersToInsert[0], null, 2));
 
     const userIds = usersToInsert.map((u) => u._id);
 
@@ -93,7 +139,7 @@ async function seed() {
       return {
         _id: new ObjectId(),
         user_id: userIds[Math.abs(userIndex)],
-        day: slot.day,
+        day: slot.day || "Monday",
         start_hour: startHour,
         end_hour: startHour + 1,
         created_at: new Date(slot.created_at || Date.now()),
@@ -111,9 +157,9 @@ async function seed() {
         _id: new ObjectId(),
         owner_id: userIds[Math.abs(ownerIndex)],
         title: project.title || "Untitled Project",
-        description: project.description || "",
-        skills_have: parseSkills(project.skills_have),
-        skills_need: parseSkills(project.skills_need),
+        description: project.description || "A collaborative project looking for team members.",
+        skills_have: getSkills(project.skills_have),
+        skills_need: getSkills(project.skills_need),
         status: project.status || "open",
         created_at: new Date(project.created_at || Date.now()),
       };
@@ -184,7 +230,6 @@ async function seed() {
       console.log("\n✓ SUCCESS: You have 1000+ records (meets rubric requirement)");
     } else {
       console.log(`\n⚠ WARNING: You have ${totalRecords} records. Need ${1000 - totalRecords} more for rubric.`);
-      console.log("  Tip: Increase availability_slots.json to have more rows.");
     }
   } catch (error) {
     console.error("\nSeeding error:", error.message);
