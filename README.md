@@ -61,7 +61,7 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ### Profile Creation
 
-![Profile Creation](docs/screenshots/profile-form.png)
+![Profile Creation](docs/screenshots/profile_form.png)
 
 ### Project Creation
 
