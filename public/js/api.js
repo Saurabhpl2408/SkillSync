@@ -1,6 +1,5 @@
 const API_BASE = '/api';
 
-// Users API
 export async function getUsers() {
   const response = await fetch(`${API_BASE}/users`);
   return response.json();
@@ -36,7 +35,6 @@ export async function deleteUser(id) {
   return response.json();
 }
 
-// Availability API
 export async function getAvailability(userId) {
   const url = userId
     ? `${API_BASE}/availability/user/${userId}`
@@ -77,7 +75,6 @@ export async function deleteUserAvailability(userId) {
   return response.json();
 }
 
-// Projects API
 export async function getProjects(status) {
   const url = status
     ? `${API_BASE}/projects?status=${status}`
@@ -126,7 +123,6 @@ export async function deleteProject(id) {
   return response.json();
 }
 
-// Partner Requests API
 export async function getRequests(status) {
   const url = status
     ? `${API_BASE}/requests?status=${status}`

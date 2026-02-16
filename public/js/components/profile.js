@@ -1,4 +1,4 @@
-import { createUser, updateUser, getUsers } from '../api.js';
+import { createUser, updateUser } from '../api.js';
 
 let currentUser = null;
 let skills = [];
@@ -77,7 +77,6 @@ export function initProfileHandlers() {
   const addSkillBtn = document.getElementById('add-skill-btn');
   const skillsContainer = document.getElementById('skills-container');
 
-  // Add skill
   addSkillBtn.addEventListener('click', () => {
     const skill = skillInput.value.trim();
     if (skill && !skills.includes(skill)) {
@@ -87,7 +86,6 @@ export function initProfileHandlers() {
     }
   });
 
-  // Enter key to add skill
   skillInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -95,7 +93,6 @@ export function initProfileHandlers() {
     }
   });
 
-  // Remove skill
   skillsContainer.addEventListener('click', (e) => {
     if (e.target.matches('[data-skill]')) {
       const skillToRemove = e.target.getAttribute('data-skill');
@@ -104,7 +101,6 @@ export function initProfileHandlers() {
     }
   });
 
-  // Work style selection
   document.querySelectorAll('.work-style-option').forEach((option) => {
     option.addEventListener('click', () => {
       const style = option.getAttribute('data-style');
@@ -115,7 +111,6 @@ export function initProfileHandlers() {
     });
   });
 
-  // Form submit
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 

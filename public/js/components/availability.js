@@ -1,5 +1,4 @@
 import {
-  getAvailability,
   createAvailabilityBulk,
   deleteUserAvailability,
 } from '../api.js';
@@ -13,10 +12,10 @@ const DAYS = [
   'Saturday',
   'Sunday',
 ];
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 8); // 8 AM to 9 PM
+const HOURS = Array.from({ length: 14 }, (_, i) => i + 8);
 
 let selectedSlots = new Set();
-let currentUserId = null; // Will be set after user creates profile
+let currentUserId = null;
 
 export function renderAvailability(container) {
   container.innerHTML = `
@@ -63,7 +62,6 @@ export function initAvailabilityHandlers() {
   const saveBtn = document.getElementById('save-availability');
   const clearBtn = document.getElementById('clear-availability');
 
-  // Toggle slot selection
   grid.addEventListener('click', (e) => {
     if (e.target.classList.contains('slot')) {
       const day = e.target.getAttribute('data-day');
@@ -80,7 +78,6 @@ export function initAvailabilityHandlers() {
     }
   });
 
-  // Save availability
   saveBtn.addEventListener('click', async () => {
     if (!currentUserId) {
       alert('Please create a profile first!');
@@ -98,7 +95,6 @@ export function initAvailabilityHandlers() {
     });
 
     try {
-      // Clear existing and save new
       await deleteUserAvailability(currentUserId);
       if (slots.length > 0) {
         await createAvailabilityBulk(slots);
@@ -109,7 +105,6 @@ export function initAvailabilityHandlers() {
     }
   });
 
-  // Clear all
   clearBtn.addEventListener('click', () => {
     selectedSlots.clear();
     document.querySelectorAll('.slot.selected').forEach((slot) => {
@@ -124,7 +119,6 @@ function formatHour(hour) {
   return `${hour} AM`;
 }
 
-// Export function to set current user (call this after profile creation)
 export function setCurrentUser(userId) {
   currentUserId = userId;
 }

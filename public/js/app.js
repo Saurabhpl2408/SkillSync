@@ -1,4 +1,3 @@
-import { getUsers } from './api.js';
 import { renderProfile, initProfileHandlers } from './components/profile.js';
 import {
   renderAvailability,

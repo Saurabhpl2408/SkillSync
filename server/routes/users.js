@@ -4,7 +4,6 @@ import { getDB } from '../db/connection.js';
 
 const router = express.Router();
 
-// GET all users
 router.get('/', async (req, res) => {
   try {
     const db = getDB();
@@ -15,7 +14,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single user by ID
 router.get('/:id', async (req, res) => {
   try {
     const db = getDB();
@@ -31,7 +29,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// CREATE new user
 router.post('/', async (req, res) => {
   try {
     const db = getDB();
@@ -50,7 +47,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// UPDATE user
 router.put('/:id', async (req, res) => {
   try {
     const db = getDB();
@@ -73,7 +69,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE user
 router.delete('/:id', async (req, res) => {
   try {
     const db = getDB();

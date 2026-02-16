@@ -4,7 +4,6 @@ import { getDB } from '../db/connection.js';
 
 const router = express.Router();
 
-// GET all availability slots (optionally filter by user_id)
 router.get('/', async (req, res) => {
   try {
     const db = getDB();
@@ -21,7 +20,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET slots for a specific user
 router.get('/user/:user_id', async (req, res) => {
   try {
     const db = getDB();
@@ -37,7 +35,6 @@ router.get('/user/:user_id', async (req, res) => {
   }
 });
 
-// GET single slot by ID
 router.get('/:id', async (req, res) => {
   try {
     const db = getDB();
@@ -53,7 +50,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// CREATE new availability slot
 router.post('/', async (req, res) => {
   try {
     const db = getDB();
@@ -71,7 +67,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// CREATE multiple slots at once (bulk insert)
 router.post('/bulk', async (req, res) => {
   try {
     const db = getDB();
@@ -89,7 +84,6 @@ router.post('/bulk', async (req, res) => {
   }
 });
 
-// UPDATE slot
 router.put('/:id', async (req, res) => {
   try {
     const db = getDB();
@@ -110,7 +104,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE slot
 router.delete('/:id', async (req, res) => {
   try {
     const db = getDB();
@@ -126,7 +119,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// DELETE all slots for a user
 router.delete('/user/:user_id', async (req, res) => {
   try {
     const db = getDB();

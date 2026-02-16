@@ -2,7 +2,6 @@ import {
   getUsers,
   getProjects,
   getAvailability,
-  createRequest,
 } from '../api.js';
 
 let currentUserId = localStorage.getItem('currentUserId') || null;
