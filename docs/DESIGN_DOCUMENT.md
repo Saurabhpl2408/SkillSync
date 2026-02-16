@@ -1,514 +1,487 @@
-# SkillSync — Design Document
-
-> **Course:** Web Development — Spring 2026, Northeastern University  
-> **Authors:** Prasad Kanade & Saurabh Lohokare  
-> **Date:** February 2026  
-> **Version:** 1.0
-
+---
+title: 'SkillSync - Design Document'
+subtitle: 'Find Project Partners Through Complementary Skills, Not Friendship'
+author:
+  - Prasad Kanade
+  - Saurabh Lohokare
+date: 'Spring 2026'
+geometry: margin=1in
+fontsize: 12pt
+toc: true
+toc-depth: 3
+numbersections: true
 ---
 
-## Table of Contents
+\newpage
 
-1. [Project Description](#1-project-description)
-2. [User Personas](#2-user-personas)
-3. [User Stories](#3-user-stories)
-4. [Design Mockups](#4-design-mockups)
+# Project Description
 
----
+## Overview
 
-## 1. Project Description
+SkillSync is a web application that helps students form balanced, effective project teams based on complementary technical skills rather than existing friendships. In academic settings, students tend to team up with friends, which often results in overlapping skill sets and critical gaps -- for example, a team of three frontend developers with no one to handle backend or database work.
 
-### Problem Statement
+SkillSync addresses this by letting students create skill profiles, post project requirements, and discover potential partners whose abilities fill gaps in their team. The platform also incorporates schedule compatibility and work-style preferences to ensure that matched partners can realistically collaborate.
 
-In academic settings, students typically form project teams based on existing friendships. While comfortable, this approach consistently produces unbalanced teams: groups of three frontend developers with no one to handle the backend, teams where everyone prefers late-night work but no one can meet during the day, or partners whose skills overlap so heavily that role division becomes a source of conflict rather than collaboration.
+## Problem Statement
 
-### Solution
+University group projects frequently suffer from:
 
-SkillSync is a web application that matches students into project teams based on **complementary skills**, **schedule compatibility**, and **work style preferences**. Rather than asking "who do I know?", SkillSync helps students ask "who has what my team needs?"
+- **Skill Overlap:** Teams formed by friendship often have redundant abilities (e.g., everyone knows React, nobody knows databases).
+- **Schedule Conflicts:** Partners who cannot find overlapping free time waste effort coordinating.
+- **Work-Style Mismatch:** A night-owl coder paired with a morning-person designer leads to communication friction.
+- **No Visibility:** Students have no easy way to discover classmates with the specific skills they need.
 
-### Core Functionality
+## Solution
 
-**Profile Management** — Students create profiles listing their technical skills (React, Node.js, Python, etc.), GitHub URL, and work style preferences (morning vs. night person, remote vs. in-person). Skills are added as dynamic tags and can be updated at any time.
+SkillSync provides four core capabilities:
 
-**Availability Scheduling** — An interactive weekly grid (Monday–Sunday, 8 AM–9 PM) lets students click time slots to mark when they are free. This data is saved per-user and can be viewed by potential partners to assess schedule overlap before committing to a team.
+1. **Skill Profiles** -- Users list their technical skills, GitHub link, and work-style preferences.
+2. **Availability Grid** -- An interactive weekly calendar lets users mark when they are free.
+3. **Project Posts with Skill Gap Analysis** -- Project owners list skills they have and skills they need; the platform highlights the gap.
+4. **Partner Discovery and Requests** -- Users browse potential partners filtered by skill, see matching indicators, and send partnership requests.
 
-**Project Posting** — Students post projects specifying what skills they already have and what skills they need. This creates a clear "skill gap" that other students can see and fill. Projects have open/closed status and full editing capabilities.
+## Target Audience
 
-**Partner Browsing & Matching** — A browsable directory of all registered users, filterable by skill. When a specific project is selected, SkillSync performs a skill gap analysis: it highlights which users possess the needed skills, ranks them by match strength, and visually distinguishes matching skills from non-matching ones.
+Northeastern University graduate and undergraduate students enrolled in project-based courses who need to form balanced teams.
 
-**Partner Requests** — Students can send partnership requests through specific projects with a custom message. Project owners receive these requests and can accept or decline. Both sent and received requests are tracked with status indicators (pending, accepted, declined).
+\newpage
 
-### Technical Architecture
+# User Personas
 
-The application follows a client-server architecture with complete separation of concerns:
+## Persona 1: Priya -- The Frontend-Heavy Student
 
-- **Backend:** Node.js + Express.js serving a RESTful API. The native MongoDB driver (not Mongoose) connects to MongoDB Atlas. Four collections — `users`, `availability_slots`, `project_posts`, and `partner_requests` — each support full CRUD operations.
-- **Frontend:** A single-page application built with vanilla JavaScript using client-side rendering. Each page (Profile, Availability, Projects, Browse, Requests) is a separate ES module that renders HTML into a shared `<main>` container. CSS is organized into per-module files.
-- **Deployment:** Hosted on Render with environment-based secret management (MongoDB credentials stored in `.env`, never committed to version control).
+| Attribute       | Detail                                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| **Name**        | Priya Sharma                                                                                              |
+| **Age**         | 23                                                                                                        |
+| **Program**     | MS in Computer Science, Northeastern University                                                           |
+| **Skills**      | React, CSS, Figma, JavaScript, HTML                                                                       |
+| **Gaps**        | Backend development, databases, deployment                                                                |
+| **Work Style**  | Morning person, prefers in-person collaboration                                                           |
+| **Frustration** | Her friend group all specialize in frontend; past project teams had no one who could build the API layer. |
+| **Goal**        | Find a backend-focused partner who is available during daytime hours.                                     |
 
----
+## Persona 2: Marcus -- The Solo Backend Developer
 
-## 2. User Personas
+| Attribute       | Detail                                                                                                                              |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**        | Marcus Williams                                                                                                                     |
+| **Age**         | 25                                                                                                                                  |
+| **Program**     | MS in Information Systems, Northeastern University                                                                                  |
+| **Skills**      | Node.js, Express, MongoDB, Python, AWS                                                                                              |
+| **Gaps**        | Frontend frameworks, UI/UX design                                                                                                   |
+| **Work Style**  | Night owl, prefers remote work                                                                                                      |
+| **Frustration** | He transferred from another university and does not know many classmates. Finding partners with frontend skills has been difficult. |
+| **Goal**        | Post his project idea and attract a frontend developer who is comfortable working remotely.                                         |
 
-### Persona 1: Priya Sharma — The Frontend Specialist
+## Persona 3: Aisha -- The Project Manager Type
 
-| Attribute                | Detail                                                                                                                                                                                                                   |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Age**                  | 23                                                                                                                                                                                                                       |
-| **Program**              | MS in Computer Science, Northeastern University                                                                                                                                                                          |
-| **Technical Background** | 2 years of professional frontend experience at a mid-size startup in Bangalore. Strong in React, CSS, and UI/UX design. Limited backend and database experience.                                                         |
-| **Work Style**           | Morning person. Prefers in-person collaboration at Snell Library. Steady worker who starts assignments early and works consistently.                                                                                     |
-| **Current Frustration**  | Every group project ends up with two or three people who all want to do the frontend. Priya needs teammates who are excited about backend work so she can focus on what she does best without stepping on anyone's toes. |
-| **Goal with SkillSync**  | Find a partner who has Node.js and database skills to complement her frontend expertise. She wants to see their availability upfront so she knows they can meet during her preferred morning hours.                      |
-| **Tech Comfort**         | High. Uses GitHub daily. Comfortable with web applications.                                                                                                                                                              |
+| Attribute       | Detail                                                                                                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**        | Aisha Chen                                                                                                                                                                              |
+| **Age**         | 22                                                                                                                                                                                      |
+| **Program**     | BS in Computer Science, Northeastern University                                                                                                                                         |
+| **Skills**      | Python, Git, technical writing, project management                                                                                                                                      |
+| **Gaps**        | Full-stack web development                                                                                                                                                              |
+| **Work Style**  | Flexible schedule, prefers in-person                                                                                                                                                    |
+| **Frustration** | She has solid fundamentals but limited web development experience. She wants to join an existing project where she can contribute her organizational skills while learning from others. |
+| **Goal**        | Browse open projects, find one that needs her skill set, and send a request to join.                                                                                                    |
 
-### Persona 2: Marcus Johnson — The Backend Developer
+\newpage
 
-| Attribute                | Detail                                                                                                                                                                                                                                                                            |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Age**                  | 25                                                                                                                                                                                                                                                                                |
-| **Program**              | MS in Information Systems, Northeastern University                                                                                                                                                                                                                                |
-| **Technical Background** | Co-op experience at a fintech company working on Java microservices and PostgreSQL. Solid Python and Node.js skills. No frontend experience beyond basic HTML. Finds CSS frustrating.                                                                                             |
-| **Work Style**           | Night owl. Works best between 8 PM and midnight. Prefers remote collaboration via Slack and GitHub. Tends to work in bursts close to deadlines.                                                                                                                                   |
-| **Current Frustration**  | Marcus is new to Northeastern and doesn't know many people in his program. His previous project team was formed by the three people left over after everyone else grouped up with friends. The resulting team had no frontend skills and the final product looked unprofessional. |
-| **Goal with SkillSync**  | Post his project requirements clearly — specifying that he needs someone with React or Vue.js and CSS skills — and find a partner whose abilities fill the gap in his team. He doesn't care about meeting in person as long as they can collaborate asynchronously.               |
-| **Tech Comfort**         | High. Comfortable with APIs, Git, and command-line tools.                                                                                                                                                                                                                         |
+# User Stories
 
-### Persona 3: Sofia Chen — The Full-Stack Learner
+## Epic 1: Profile Management
 
-| Attribute                | Detail                                                                                                                                                                                                                                                                                                                        |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Age**                  | 22                                                                                                                                                                                                                                                                                                                            |
-| **Program**              | BS/MS in Computer Science (combined program), Northeastern University                                                                                                                                                                                                                                                         |
-| **Technical Background** | Has taken courses covering both frontend and backend but has no professional experience. Knows a little bit of everything — JavaScript, Python, React basics, SQL — but nothing deeply.                                                                                                                                       |
-| **Work Style**           | Flexible schedule. Prefers in-person work but can do remote. Steady worker who likes clear task division.                                                                                                                                                                                                                     |
-| **Current Frustration**  | Sofia wants to learn by working with people who are stronger than her in specific areas. When she teams up with friends who are also generalists, nobody takes ownership of any part of the project and the result is mediocre across the board.                                                                              |
-| **Goal with SkillSync**  | Browse available partners to find someone with deep expertise in an area she wants to learn — ideally backend development — so she can focus on frontend while learning from their approach to the backend. She values seeing work style preferences so she can find someone who also likes structured, steady collaboration. |
-| **Tech Comfort**         | Medium. Comfortable with web apps but not a power user. Appreciates clear UI and instructions.                                                                                                                                                                                                                                |
+**US-1.1 -- Create a Profile**
+As a student, I want to create a profile with my name, email, skills, GitHub link, and work-style preferences so that other students can learn about me and my abilities.
 
-### Persona 4: David Park — The Project Lead
+_Acceptance Criteria:_
 
-| Attribute                | Detail                                                                                                                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Age**                  | 24                                                                                                                                                                                                                                                                  |
-| **Program**              | MS in Computer Science, Northeastern University                                                                                                                                                                                                                     |
-| **Technical Background** | 1 year of industry experience as a full-stack developer. Strong in React, Node.js, MongoDB. Has led small teams before.                                                                                                                                             |
-| **Work Style**           | Morning person. Prefers in-person meetings for planning, remote for coding. Organized planner who creates timelines and milestones.                                                                                                                                 |
-| **Current Frustration**  | David often ends up doing most of the work because his teammates have overlapping skills and nobody wants to tackle the unfamiliar parts. He wants to build a team where everyone has a clear, distinct role based on their strengths.                              |
-| **Goal with SkillSync**  | Post a detailed project listing with specific skill needs (e.g., "need: UI Design, AWS, PostgreSQL") and review applications from people who actually have those skills. He wants to check their availability to ensure the team can hold regular standup meetings. |
-| **Tech Comfort**         | High. Expects a responsive, professional interface.                                                                                                                                                                                                                 |
+- Form captures name, email, skills (as tags), GitHub URL, and work-style selections.
+- Skills can be added and removed dynamically.
+- Work-style options include time preference (morning/night) and work mode (remote/in-person).
+- Profile is saved to the database and visible on the Browse page.
 
----
+**US-1.2 -- Update My Profile**
+As a student, I want to update my profile information so that my skills and preferences stay current.
 
-## 3. User Stories
+_Acceptance Criteria:_
 
-### Epic 1: Profile Management
+- Pre-populates the form with existing data.
+- Changes are persisted to the database on save.
 
-**Story 1.1 — Creating a Profile**  
-As Priya, I want to create a profile with my name, email, skills, and GitHub link so that potential partners can see what I bring to a team.  
-_Acceptance Criteria:_ The profile form collects name, email, GitHub URL, and skills. Skills can be added one at a time as tags and removed by clicking an × button. Submitting the form creates a new user record in the database and stores my user ID for the session.
+**US-1.3 -- Delete My Profile**
+As a student, I want to delete my profile so that I can remove myself from the platform.
 
-**Story 1.2 — Setting Work Style Preferences**  
-As Marcus, I want to indicate that I'm a night owl who prefers remote work so that I'm matched with partners who have compatible work habits.  
-_Acceptance Criteria:_ The profile form includes selectable options for time preference (morning/night) and work mode (remote/in-person). These preferences are saved with my user profile and displayed on my card when others browse partners.
+_Acceptance Criteria:_
 
-**Story 1.3 — Updating My Profile**  
-As Sofia, I want to update my skills as I learn new technologies so that my profile stays accurate throughout the semester.  
-_Acceptance Criteria:_ Visiting the profile page with an existing profile pre-fills all fields. I can add or remove skills and save changes. The database record is updated (PUT, not a new POST).
+- Confirmation prompt before deletion.
+- Profile and associated data are removed.
 
-**Story 1.4 — Deleting My Profile**  
-As a user, I want to delete my profile if I no longer want to be listed on the platform.  
-_Acceptance Criteria:_ A delete button removes my user record from the database and clears my session.
+## Epic 2: Availability Management
 
-### Epic 2: Availability Management
+**US-2.1 -- Set Weekly Availability**
+As a student, I want to mark my available time slots on a weekly grid so that potential partners can see when I am free.
 
-**Story 2.1 — Setting Weekly Availability**  
-As Priya, I want to click on a weekly time grid to mark when I'm free so that partners can see if our schedules overlap.  
-_Acceptance Criteria:_ A grid displays Monday–Sunday columns and 8 AM–9 PM rows. Clicking a slot toggles it between available (blue) and unavailable (white). Selected slots are visually distinct.
+_Acceptance Criteria:_
 
-**Story 2.2 — Saving Availability**  
-As Marcus, I want to save my availability so that it persists when I close the browser and come back later.  
-_Acceptance Criteria:_ Clicking "Save Availability" sends all selected slots to the backend as a bulk insert. Previous availability is cleared first to handle updates cleanly. A confirmation message appears on success.
+- Interactive 7-day x 14-hour grid (8 AM to 9 PM).
+- Click to toggle a slot as available or unavailable.
+- Selected slots are visually highlighted.
 
-**Story 2.3 — Clearing Availability**  
-As a user, I want to clear all my time slots at once so I can start fresh each week.  
-_Acceptance Criteria:_ A "Clear All" button deselects every slot on the grid immediately without making an API call (changes aren't persisted until Save is clicked).
+**US-2.2 -- Save Availability**
+As a student, I want to save my availability so that it persists across sessions.
 
-### Epic 3: Project Management
+_Acceptance Criteria:_
 
-**Story 3.1 — Posting a New Project**  
-As David, I want to post a project listing the skills I have and the skills I need so that potential partners can see exactly what gap they'd fill.  
-_Acceptance Criteria:_ A form collects title, description, "skills I have" (tag input), and "skills I need" (tag input). Submitting creates a project record with status "open" and my user ID as owner.
+- Clicking Save sends all selected slots to the server.
+- Previous availability is cleared and replaced with the new selection.
 
-**Story 3.2 — Browsing All Projects**  
-As Sofia, I want to see all open projects so I can find one that needs my skills.  
-_Acceptance Criteria:_ The projects page loads and displays all project cards showing title, description, owner name, skills have (green tags), skills need (red tags), and status badge. A filter dropdown lets me show only open or closed projects.
+**US-2.3 -- Clear Availability**
+As a student, I want to clear all my availability selections so that I can start fresh.
 
-**Story 3.3 — Editing My Project**  
-As David, I want to update my project description or change which skills I need as my team evolves.  
-_Acceptance Criteria:_ An "Edit" button appears on projects I own. Clicking it pre-fills the form with existing data including skill tags. I can modify any field and save. The status field becomes visible during editing so I can close a filled project.
+_Acceptance Criteria:_
 
-**Story 3.4 — Deleting My Project**  
-As David, I want to delete a project I no longer need so it doesn't clutter the listing.  
-_Acceptance Criteria:_ A "Delete" button appears on projects I own. A confirmation dialog prevents accidental deletion. The project record is removed from the database.
+- Clear All button deselects every slot on the grid.
 
-**Story 3.5 — Applying to Join a Project**  
-As Priya, I want to apply to join a project that needs my frontend skills so the project owner can review my application.  
-_Acceptance Criteria:_ An "Apply to Join" button appears on projects I don't own. Clicking it prompts me for a message and sends a partner request to the project owner. If I've already applied, the API returns an error and I'm informed.
+## Epic 3: Project Posts
 
-### Epic 4: Partner Discovery
+**US-3.1 -- Create a Project Post**
+As a student, I want to post a project with a title, description, skills I have, and skills I need so that I can advertise what kind of partner I am looking for.
 
-**Story 4.1 — Browsing All Users**  
-As Marcus, I want to browse all registered users with their skills so I can find potential teammates.  
-_Acceptance Criteria:_ The browse page displays a grid of user cards showing name, email, skills (as tags), work style badges, and a GitHub link. Cards load from the API on page render.
+_Acceptance Criteria:_
 
-**Story 4.2 — Filtering by Skill**  
-As David, I want to filter users by a specific skill so I can quickly find someone with React expertise.  
-_Acceptance Criteria:_ A text input lets me type a skill name. Clicking "Search" filters the displayed users to only those whose skills include a case-insensitive match. "Clear" resets the filter.
+- Form with title, description, dynamic skill-tag inputs for have and need.
+- Project is stored with status open and linked to the creator.
 
-**Story 4.3 — Skill Gap Analysis for a Project**  
-As David, I want to select one of my projects and see which users have the skills it needs so I can make an informed decision about who to invite.  
-_Acceptance Criteria:_ A dropdown lists my open projects. Selecting one displays the project's needed skills prominently, filters users to those who match at least one needed skill, highlights matching skills on each user card with a distinct style, and sorts users by number of matching skills (most matches first).
+**US-3.2 -- Edit My Project**
+As a project owner, I want to edit my project details and change its status (open/closed) so that I can keep the listing accurate.
 
-**Story 4.4 — Viewing a Partner's Availability**  
-As Priya, I want to view another user's weekly availability so I can see if we can actually meet.  
-_Acceptance Criteria:_ A "View Availability" button on each user card fetches their availability slots and displays them in a readable format showing which days and hours they're free.
+_Acceptance Criteria:_
 
-**Story 4.5 — Sending a Partner Request from Browse**  
-As David, I want to send a partnership request directly from the browse page when I find a good match for my project.  
-_Acceptance Criteria:_ When I have a project selected in the filter, a "Send Request" button appears on each user card. Clicking it prompts for a message, then creates a partner request linking me, the user, and the project.
+- Edit form pre-populates with existing project data.
+- Status dropdown allows toggling between open and closed.
 
-### Epic 5: Request Management
+**US-3.3 -- Delete My Project**
+As a project owner, I want to delete my project post so that it no longer appears in listings.
 
-**Story 5.1 — Viewing Received Requests**  
-As David, I want to see all partnership requests I've received so I can review and respond to them.  
-_Acceptance Criteria:_ The requests page defaults to a "Received" tab showing cards for each incoming request with project name, requester name, their skills, message, date, and status badge. Only pending requests show Accept/Decline buttons.
+_Acceptance Criteria:_
 
-**Story 5.2 — Accepting a Request**  
-As David, I want to accept a partnership request so the applicant knows they're on the team.  
-_Acceptance Criteria:_ Clicking "Accept" updates the request status to "accepted" in the database and refreshes the list. The status badge changes to green.
+- Confirmation prompt before deletion.
+- Project is removed from the database.
 
-**Story 5.3 — Declining a Request**  
-As David, I want to decline a request that isn't a good fit so the applicant can look elsewhere.  
-_Acceptance Criteria:_ Clicking "Decline" updates the request status to "declined" and refreshes the list. The status badge changes to red.
+**US-3.4 -- Browse and Filter Projects**
+As a student, I want to browse all projects and filter by status so that I can find open opportunities.
 
-**Story 5.4 — Viewing Sent Requests**  
-As Priya, I want to see the requests I've sent so I can track which projects I've applied to and their status.  
-_Acceptance Criteria:_ A "Sent" tab shows my outgoing requests with project name, recipient name, my message, and current status. Pending requests show a "Cancel" button.
+_Acceptance Criteria:_
 
-**Story 5.5 — Cancelling a Sent Request**  
-As Priya, I want to cancel a request I sent if I've changed my mind about joining a project.  
-_Acceptance Criteria:_ Clicking "Cancel" on a pending sent request shows a confirmation dialog, then deletes the request from the database and refreshes the list.
+- Project list shows title, description, owner name, skills have/need, and status badge.
+- Dropdown filter for All, Open, or Closed.
 
-**Story 5.6 — Filtering Requests by Status**  
-As a user, I want to filter my requests by status (pending/accepted/declined) so I can focus on what needs my attention.  
-_Acceptance Criteria:_ A status dropdown filters the displayed requests. The filter applies to whichever tab (Received/Sent/All) is currently active.
+**US-3.5 -- Apply to a Project**
+As a student, I want to apply to join someone else's project so that I can offer my skills.
 
----
+_Acceptance Criteria:_
 
-## 4. Design Mockups
+- Apply to Join button on projects I do not own.
+- Prompt for a message, then a partner request is created.
 
-### 4.1 Home Page
+## Epic 4: Partner Discovery
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability |        │
-│                   Projects | Browse | Requests           │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│           Welcome to SkillSync                           │
-│   Find project partners based on complementary           │
-│   skills, not just friendship.                           │
-│                                                          │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
-│  │  Create Your │ │  Post a     │ │  Find       │       │
-│  │  Profile     │ │  Project    │ │  Partners   │       │
-│  │             │ │             │ │             │       │
-│  │  List your  │ │  Describe   │ │  Browse     │       │
-│  │  skills and │ │  what skills│ │  users with │       │
-│  │  preferences│ │  your team  │ │  complement-│       │
-│  │             │ │  needs      │ │  ary skills │       │
-│  │ [Get Started]│ │[Post Project]│ │  [Browse]   │       │
-│  └─────────────┘ └─────────────┘ └─────────────┘       │
-│                                                          │
-├──────────────────────────────────────────────────────────┤
-│          © 2026 SkillSync - Prasad & Saurabh             │
-└──────────────────────────────────────────────────────────┘
-```
+**US-4.1 -- Browse Partners by Skill**
+As a student, I want to search for other users by skill so that I can find someone with the expertise I need.
 
-### 4.2 Profile Page
+_Acceptance Criteria:_
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability | ...    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌────────────────────────────────────────┐              │
-│  │  My Profile                            │              │
-│  │                                        │              │
-│  │  Name:     [___________________]       │              │
-│  │  Email:    [___________________]       │              │
-│  │  GitHub:   [___________________]       │              │
-│  │                                        │              │
-│  │  Skills:                               │              │
-│  │  [_____________] [Add]                 │              │
-│  │  ┌──────┐ ┌────────┐ ┌─────┐          │              │
-│  │  │React ×│ │Node.js ×│ │CSS ×│          │              │
-│  │  └──────┘ └────────┘ └─────┘          │              │
-│  │                                        │              │
-│  │  Work Style:                           │              │
-│  │  ┌───────────┐  ┌───────────┐         │              │
-│  │  │ ☀ Morning │  │ 🌙 Night  │          │              │
-│  │  │ (selected)│  │           │          │              │
-│  │  └───────────┘  └───────────┘         │              │
-│  │  ┌───────────┐  ┌───────────┐         │              │
-│  │  │  Remote   │  │ In-Person │          │              │
-│  │  │           │  │ (selected)│          │              │
-│  │  └───────────┘  └───────────┘         │              │
-│  │                                        │              │
-│  │  [Save Profile]  [Delete Profile]      │              │
-│  └────────────────────────────────────────┘              │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
-```
+- Text input filters users whose skills match the search term.
+- Results update on search.
 
-### 4.3 Availability Grid
+**US-4.2 -- Skill Gap Matching for a Project**
+As a project owner, I want to select one of my projects and see which users have the skills I need so that I can make targeted requests.
+
+_Acceptance Criteria:_
+
+- Project dropdown shows my open projects.
+- Selecting a project displays needed skills and highlights matching users.
+- Users are sorted by number of matching skills.
+
+**US-4.3 -- View a User's Availability**
+As a student, I want to see another user's availability so that I can check schedule compatibility before reaching out.
+
+_Acceptance Criteria:_
+
+- View Availability button on each user card.
+- Displays the user's marked time slots.
+
+**US-4.4 -- Send a Partner Request**
+As a student, I want to send a partnership request to another user for a specific project so that they can consider joining my team.
+
+_Acceptance Criteria:_
+
+- Button appears when a project is selected.
+- Duplicate requests to the same user for the same project are blocked.
+
+## Epic 5: Partner Requests
+
+**US-5.1 -- View Received Requests**
+As a student, I want to see partnership requests others have sent me so that I can decide whether to accept or decline.
+
+_Acceptance Criteria:_
+
+- Received tab shows requests where I am the recipient.
+- Each request shows project name, sender name, sender skills, message, and status.
+
+**US-5.2 -- Accept or Decline a Request**
+As a student, I want to accept or decline a pending request so that I can manage my partnerships.
+
+_Acceptance Criteria:_
+
+- Accept and Decline buttons on pending received requests.
+- Status updates to accepted or declined on click.
+
+**US-5.3 -- View Sent Requests**
+As a student, I want to see requests I have sent so that I can track their status.
+
+_Acceptance Criteria:_
+
+- Sent tab shows requests where I am the sender.
+- Pending requests have a Cancel option.
+
+**US-5.4 -- Filter Requests by Status**
+As a student, I want to filter requests by pending, accepted, or declined so that I can focus on actionable items.
+
+_Acceptance Criteria:_
+
+- Dropdown filter applies to the current tab.
+
+\newpage
+
+# Design Mockups
+
+## Application Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability | ...    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │  Set Your Availability                         │      │
-│  │  Click on time slots when you're available.    │      │
-│  │                                                │      │
-│  │      Mon   Tue   Wed   Thu   Fri   Sat   Sun  │      │
-│  │ 8AM │     │     │     │     │     │     │     │      │
-│  │ 9AM │ ██  │     │ ██  │     │ ██  │     │     │      │
-│  │10AM │ ██  │     │ ██  │     │ ██  │     │     │      │
-│  │11AM │ ██  │ ██  │ ██  │ ██  │     │     │     │      │
-│  │12PM │     │ ██  │     │ ██  │     │     │     │      │
-│  │ 1PM │     │     │     │     │     │     │     │      │
-│  │ 2PM │     │ ██  │     │ ██  │     │     │     │      │
-│  │ 3PM │     │ ██  │     │ ██  │     │     │     │      │
-│  │ ... │     │     │     │     │     │     │     │      │
-│  │ 9PM │     │     │     │     │     │     │     │      │
-│  │                                                │      │
-│  │  ██ Available    □ Not Available               │      │
-│  │                                                │      │
-│  │  [Save Availability]  [Clear All]              │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
++-----------------------------------------------------+
+|                   Browser (SPA)                      |
+|  +------------------------------------------------+ |
+|  |  index.html  <--  app.js (router)              | |
+|  |                                                | |
+|  |  +---------+ +------------+ +-------------+    | |
+|  |  | Profile | | Availability| |  Projects  |    | |
+|  |  |Component| | Component  | |  Component |    | |
+|  |  +---------+ +------------+ +-------------+    | |
+|  |  +---------+ +------------+                    | |
+|  |  | Browse  | |  Requests  |   api.js           | |
+|  |  |Component| | Component  |  (HTTP client)     | |
+|  |  +---------+ +------------+                    | |
+|  +---------------------+-------------------------+ |
+|                        | REST API calls             |
++------------------------+----------------------------+
+                         |
++------------------------+----------------------------+
+|          Express.js Server (Node.js)                |
+|                        |                            |
+|  +---------------------+--------------------------+ |
+|  |               server/index.js                  | |
+|  |                                                | |
+|  |  /api/users --------- routes/users.js          | |
+|  |  /api/availability -- routes/availability.js   | |
+|  |  /api/projects ------ routes/projects.js       | |
+|  |  /api/requests ------ routes/requests.js       | |
+|  +---------------------+--------------------------+ |
+|                        |                            |
+|  +---------------------+--------------------------+ |
+|  |           db/connection.js                     | |
+|  |          (MongoDB Native Driver)               | |
+|  +---------------------+--------------------------+ |
++------------------------+----------------------------+
+                         |
++------------------------+----------------------------+
+|             MongoDB Atlas                           |
+|                                                     |
+|  Collections:                                       |
+|  +----------+ +------------------+                  |
+|  |  users   | | availability_    |                  |
+|  |          | | slots            |                  |
+|  +----------+ +------------------+                  |
+|  +----------+ +------------------+                  |
+|  | project_ | | partner_         |                  |
+|  | posts    | | requests         |                  |
+|  +----------+ +------------------+                  |
++-----------------------------------------------------+
 ```
 
-### 4.4 Projects Page
+## Page Wireframes
+
+The following wireframes were created during the design phase to guide the implementation of each page. They are located in the `docs/wireframes/` directory.
+
+### Home Page
+
+![Home Page Wireframe](wireframes/01_home.jpg)
+
+The home page introduces SkillSync with three call-to-action cards: Create Your Profile, Post a Project, and Find Partners. Each card links to its respective page.
+
+### Profile Page
+
+![Profile Page Wireframe](wireframes/02_profile.jpg)
+
+The profile page contains a form for entering name, email, GitHub URL, and technical skills (added as tags). Work style preferences (morning/night, remote/in-person) are selectable options.
+
+### Availability Grid
+
+![Availability Grid Wireframe](wireframes/03_availability.jpg)
+
+An interactive 7-day by 14-hour grid where users click cells to toggle availability. Blue cells indicate available time slots. Save and Clear buttons manage persistence.
+
+### Projects Page
+
+![Projects Page Wireframe](wireframes/04_projects.jpg)
+
+Lists all project posts with title, description, owner, status badge, and skill tags (green for "has", red for "needs"). Owners see Edit/Delete buttons; others see Apply to Join.
+
+### Create Project Form
+
+![Create Project Form Wireframe](wireframes/05_create_project.jpg)
+
+The project creation form collects title, description, skills the owner has, and skills the owner needs. Skills are entered via a tag input with add/remove functionality.
+
+### Browse Partners Page
+
+![Browse Partners Page Wireframe](wireframes/06_browse_partners.jpg)
+
+A filterable grid of user cards showing name, email, skills, work style badges, and GitHub links. When a project is selected, skill gap analysis highlights matching skills and sorts users by relevance.
+
+### Requests Page
+
+![Requests Page Wireframe](wireframes/07_requests.jpg)
+
+Tabbed view (Received/Sent/All) of partner requests. Each request card shows project name, sender, recipient, message, date, requester skills, and status. Pending received requests show Accept/Decline buttons.
+
+\newpage
+
+# Data Model
+
+## Collections
+
+### users
+
+| Field      | Type            | Description                |
+| ---------- | --------------- | -------------------------- |
+| \_id       | ObjectId        | Primary key                |
+| name       | String          | Full name                  |
+| email      | String          | Email address              |
+| skills     | Array of String | Technical skills           |
+| github_url | String          | GitHub profile URL         |
+| work_style | Object          | time_preference, work_mode |
+| created_at | Date            | Account creation timestamp |
+
+### availability_slots
+
+| Field      | Type     | Description             |
+| ---------- | -------- | ----------------------- |
+| \_id       | ObjectId | Primary key             |
+| user_id    | ObjectId | Reference to users      |
+| day        | String   | Day of week             |
+| start_hour | Number   | Start hour (8-21)       |
+| end_hour   | Number   | End hour (9-22)         |
+| created_at | Date     | Slot creation timestamp |
+
+### project_posts
+
+| Field       | Type            | Description             |
+| ----------- | --------------- | ----------------------- |
+| \_id        | ObjectId        | Primary key             |
+| owner_id    | ObjectId        | Reference to users      |
+| title       | String          | Project title           |
+| description | String          | Project description     |
+| skills_have | Array of String | Skills the owner brings |
+| skills_need | Array of String | Skills needed           |
+| status      | String          | open or closed          |
+| created_at  | Date            | Post creation timestamp |
+
+### partner_requests
+
+| Field        | Type     | Description                    |
+| ------------ | -------- | ------------------------------ |
+| \_id         | ObjectId | Primary key                    |
+| project_id   | ObjectId | Reference to project_posts     |
+| from_user_id | ObjectId | Requester                      |
+| to_user_id   | ObjectId | Recipient / project owner      |
+| message      | String   | Application message            |
+| status       | String   | pending, accepted, or declined |
+| created_at   | Date     | Request timestamp              |
+
+## Entity Relationship Diagram
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability | ...    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  Projects                        [Create New Project]    │
-│                                                          │
-│  Filter: [All Projects ▼]                                │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │  E-Commerce Dashboard              [OPEN]      │      │
-│  │  Build a real-time analytics dashboard for...  │      │
-│  │  Posted by: David Park                         │      │
-│  │                                                │      │
-│  │  Has:  ┌────────┐ ┌─────────┐                  │      │
-│  │        │ Node.js│ │ MongoDB │   (green tags)   │      │
-│  │        └────────┘ └─────────┘                  │      │
-│  │  Needs:┌───────┐ ┌─────┐ ┌───────────┐        │      │
-│  │        │ React │ │ CSS │ │ UI Design │ (red)   │      │
-│  │        └───────┘ └─────┘ └───────────┘        │      │
-│  │                                                │      │
-│  │  [Apply to Join]                               │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │  ML Data Pipeline                  [OPEN]      │      │
-│  │  ...                                           │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
++----------+       +------------------+
+|  users   |--1:N--|  availability_   |
+|          |       |  slots           |
++----------+       +------------------+
+     |
+     +--1:N--+
+     |       v
+     |  +--------------+
+     |  | project_     |
+     |  | posts        |
+     |  +--------------+
+     |       |
+     |       | 1:N
+     |       v
+     |  +--------------+
+     +--| partner_     |
+        | requests     |--references--> users (from + to)
+        +--------------+
 ```
 
-### 4.5 Browse Partners Page
+\newpage
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability | ...    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  Browse Partners                                         │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │ Filter by Skill: [________]                    │      │
-│  │ For Project:     [Select a project ▼]          │      │
-│  │ [Search]  [Clear]                              │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-│  ┌─ Skill Gap Analysis ─────────────────────────┐        │
-│  │ Project: E-Commerce Dashboard                │        │
-│  │ Skills Needed: [React] [CSS] [UI Design]     │        │
-│  └──────────────────────────────────────────────┘        │
-│                                                          │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐     │
-│  │ Priya Sharma │ │ Sofia Chen   │ │ Alex Kim     │     │
-│  │ priya@e.com  │ │ sofia@e.com  │ │ alex@e.com   │     │
-│  │              │ │              │ │              │     │
-│  │ [React✓]    │ │ [React✓]    │ │ [Python]     │     │
-│  │ [CSS✓]      │ │ [JavaScript]│ │ [React✓]    │     │
-│  │ [Figma]     │ │ [SQL]       │ │ [AWS]        │     │
-│  │              │ │              │ │              │     │
-│  │ ☀morning    │ │ ☀morning    │ │ 🌙night      │     │
-│  │ 🏢in-person │ │ 🏠remote    │ │ 🏠remote     │     │
-│  │              │ │              │ │              │     │
-│  │ View GitHub  │ │ View GitHub  │ │ View GitHub  │     │
-│  │[Availability]│ │[Availability]│ │[Availability]│     │
-│  │[Send Request]│ │[Send Request]│ │[Send Request]│     │
-│  └──────────────┘ └──────────────┘ └──────────────┘     │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
-```
+# API Design
 
-### 4.6 Requests Page
+## REST Endpoints Summary
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  SkillSync        Home | Profile | Availability | ...    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  Partner Requests                                        │
-│                                                          │
-│  [Received]  [Sent]  [All]                               │
-│                                                          │
-│  Filter: [All ▼]                                         │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │  E-Commerce Dashboard              [PENDING]   │      │
-│  │                                                │      │
-│  │  From: Priya Sharma                            │      │
-│  │  To:   David Park (You)                        │      │
-│  │  Message: "I'd love to join! I have 2 years    │      │
-│  │  of React experience and strong CSS skills."   │      │
-│  │  Date: 2/15/2026                               │      │
-│  │                                                │      │
-│  │  Requester Skills:                             │      │
-│  │  [React] [CSS] [Figma] [JavaScript]            │      │
-│  │                                                │      │
-│  │  [Accept]  [Decline]                           │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐      │
-│  │  ML Data Pipeline                 [ACCEPTED]   │      │
-│  │                                                │      │
-│  │  From: Marcus Johnson                          │      │
-│  │  To:   David Park (You)                        │      │
-│  │  Message: "I can handle the entire backend..." │      │
-│  │  Date: 2/14/2026                               │      │
-│  └────────────────────────────────────────────────┘      │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
-```
+| Resource     | Method | Endpoint                   | Description       |
+| ------------ | ------ | -------------------------- | ----------------- |
+| Users        | GET    | /api/users                 | List all users    |
+| Users        | GET    | /api/users/:id             | Get user by ID    |
+| Users        | POST   | /api/users                 | Create user       |
+| Users        | PUT    | /api/users/:id             | Update user       |
+| Users        | DELETE | /api/users/:id             | Delete user       |
+| Availability | GET    | /api/availability          | List all slots    |
+| Availability | GET    | /api/availability/user/:id | User slots        |
+| Availability | POST   | /api/availability          | Create slot       |
+| Availability | POST   | /api/availability/bulk     | Bulk create       |
+| Availability | PUT    | /api/availability/:id      | Update slot       |
+| Availability | DELETE | /api/availability/:id      | Delete slot       |
+| Availability | DELETE | /api/availability/user/:id | Delete user slots |
+| Projects     | GET    | /api/projects              | List projects     |
+| Projects     | GET    | /api/projects/:id          | Get project       |
+| Projects     | GET    | /api/projects/user/:id     | User projects     |
+| Projects     | GET    | /api/projects/skill/:skill | By skill          |
+| Projects     | POST   | /api/projects              | Create project    |
+| Projects     | PUT    | /api/projects/:id          | Update project    |
+| Projects     | DELETE | /api/projects/:id          | Delete project    |
+| Requests     | GET    | /api/requests              | List requests     |
+| Requests     | GET    | /api/requests/:id          | Get request       |
+| Requests     | GET    | /api/requests/sent/:id     | Sent requests     |
+| Requests     | GET    | /api/requests/received/:id | Received          |
+| Requests     | GET    | /api/requests/project/:id  | By project        |
+| Requests     | POST   | /api/requests              | Create request    |
+| Requests     | PUT    | /api/requests/:id/status   | Update status     |
+| Requests     | DELETE | /api/requests/:id          | Delete request    |
 
-### 4.7 Navigation Flow
+\newpage
 
-```
-                    ┌──────────┐
-                    │   Home   │
-                    └────┬─────┘
-          ┌──────────┬───┴────┬──────────┬──────────┐
-          ▼          ▼        ▼          ▼          ▼
-     ┌─────────┐ ┌───────┐ ┌────────┐ ┌──────┐ ┌────────┐
-     │ Profile │ │Avail- │ │Projects│ │Browse│ │Requests│
-     │         │ │ability│ │        │ │      │ │        │
-     └─────────┘ └───────┘ └───┬────┘ └──┬───┘ └────────┘
-                                │         │
-                                ▼         ▼
-                          ┌──────────────────┐
-                          │ Partner Request  │
-                          │ (Apply / Send)   │
-                          └──────────────────┘
-```
+# Technology Decisions
 
-All pages are accessible from the persistent navigation bar. The application uses client-side routing — clicking any nav link or button with a `data-page` attribute re-renders the main content area without a full page reload. User session (current user ID) is persisted in `localStorage` across page navigations and browser sessions.
-
----
-
-## Appendix: Data Model
-
-### Collections
-
-**users**
-
-```json
-{
-  "_id": "ObjectId",
-  "name": "string",
-  "email": "string",
-  "skills": ["string"],
-  "github_url": "string",
-  "work_style": {
-    "time_preference": "morning | night",
-    "work_mode": "remote | in-person"
-  },
-  "created_at": "Date"
-}
-```
-
-**availability_slots**
-
-```json
-{
-  "_id": "ObjectId",
-  "user_id": "ObjectId (ref: users)",
-  "day": "Monday | Tuesday | ... | Sunday",
-  "start_hour": "number (8-21)",
-  "end_hour": "number (9-22)",
-  "created_at": "Date"
-}
-```
-
-**project_posts**
-
-```json
-{
-  "_id": "ObjectId",
-  "owner_id": "ObjectId (ref: users)",
-  "title": "string",
-  "description": "string",
-  "skills_have": ["string"],
-  "skills_need": ["string"],
-  "status": "open | closed",
-  "created_at": "Date"
-}
-```
-
-**partner_requests**
-
-```json
-{
-  "_id": "ObjectId",
-  "project_id": "ObjectId (ref: project_posts)",
-  "from_user_id": "ObjectId (ref: users)",
-  "to_user_id": "ObjectId (ref: users)",
-  "message": "string",
-  "status": "pending | accepted | declined",
-  "created_at": "Date"
-}
-```
-
-### Entity Relationships
-
-```
-users 1──────M availability_slots    (user has many slots)
-users 1──────M project_posts         (user owns many projects)
-users 1──────M partner_requests      (user sends many requests)
-users 1──────M partner_requests      (user receives many requests)
-project_posts 1──M partner_requests  (project has many requests)
-```
+| Decision     | Choice                 | Rationale                      |
+| ------------ | ---------------------- | ------------------------------ |
+| Runtime      | Node.js v18+           | Course requirement; async I/O  |
+| Framework    | Express.js 5           | Lightweight, matches course    |
+| Database     | MongoDB Atlas (native) | NoSQL flexibility; free tier   |
+| Frontend     | Vanilla JS (CSR)       | Course requirement             |
+| Modules      | ES Modules             | Modern; CJS prohibited         |
+| Hosting      | Render                 | Free auto-deploy from GitHub   |
+| Code Quality | ESLint + Prettier      | Consistency and error catching |
+| License      | MIT                    | Open-source, meets rubric      |

@@ -18,7 +18,6 @@
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
-- [Project Structure](#project-structure)
 - [Team](#team)
 - [License](#license)
 
@@ -50,7 +49,6 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 🔗 **[https://skillsync-fdw0.onrender.com](https://skillsync-fdw0.onrender.com)**
 
-
 ---
 
 ## Screenshots
@@ -79,25 +77,17 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ## Features
 
-### ✅ Implemented (Phase 1)
-
 | Feature                    | Description                                                    |
 | -------------------------- | -------------------------------------------------------------- |
 | **User Profiles**          | Create profiles with name, email, GitHub, and technical skills |
 | **Skills Management**      | Add/remove skill tags dynamically                              |
 | **Work Style Preferences** | Select morning/night and remote/in-person preferences          |
 | **Availability Grid**      | Interactive weekly calendar to mark free time slots            |
-| **Browse Partners**        | View all registered users with their skills                    |
-| **Full CRUD Operations**   | Create, Read, Update, Delete for users and availability        |
-
-### 🚧 Coming Soon (Phase 2)
-
-| Feature                | Description                                        |
-| ---------------------- | -------------------------------------------------- |
-| **Project Posts**      | Post project requirements and needed skills        |
-| **Skill Gap Analysis** | Visual comparison of your skills vs. project needs |
-| **Partner Requests**   | Send/accept/decline partnership invitations        |
-| **Schedule Overlap**   | Visualize common free time with potential partners |
+| **Project Posts**          | Post project requirements with skills you have and need        |
+| **Skill Gap Analysis**     | Visual comparison of your skills vs. project needs             |
+| **Browse Partners**        | View and filter users by skill, with match ranking             |
+| **Partner Requests**       | Send/accept/decline partnership invitations                    |
+| **Full CRUD Operations**   | Create, Read, Update, Delete across all four collections       |
 
 ---
 
@@ -202,23 +192,6 @@ Development: http://localhost:3000/api
 | `PUT`    | `/api/users/:id` | Update user     |
 | `DELETE` | `/api/users/:id` | Delete user     |
 
-#### Example: Create User
-
-```bash
-curl -X POST https://skillsync-fdw0.onrender.com/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "skills": ["React", "Node.js", "MongoDB"],
-    "github_url": "https://github.com/johndoe",
-    "work_style": {
-      "schedule": "morning",
-      "mode": "remote"
-    }
-  }'
-```
-
 ### Availability Endpoints
 
 | Method   | Endpoint                          | Description           |
@@ -231,56 +204,30 @@ curl -X POST https://skillsync-fdw0.onrender.com/api/users \
 | `DELETE` | `/api/availability/:id`           | Delete slot           |
 | `DELETE` | `/api/availability/user/:user_id` | Delete user's slots   |
 
-#### Example: Create Availability Slot
+### Projects Endpoints
 
-```bash
-curl -X POST https://skillsync-fdw0.onrender.com/api/availability \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "USER_OBJECT_ID",
-    "day": "Monday",
-    "start_hour": 9,
-    "end_hour": 10
-  }'
-```
+| Method   | Endpoint                     | Description           |
+| -------- | ---------------------------- | --------------------- |
+| `GET`    | `/api/projects`              | Get all projects      |
+| `GET`    | `/api/projects/:id`          | Get project by ID     |
+| `GET`    | `/api/projects/user/:id`     | Get user's projects   |
+| `GET`    | `/api/projects/skill/:skill` | Get projects by skill |
+| `POST`   | `/api/projects`              | Create project        |
+| `PUT`    | `/api/projects/:id`          | Update project        |
+| `DELETE` | `/api/projects/:id`          | Delete project        |
 
----
+### Requests Endpoints
 
-## Project Structure
-
-```
-SkillSync/
-├── public/                    # Frontend static files
-│   ├── css/
-│   │   ├── main.css          # Global styles
-│   │   ├── profile.css       # Profile page styles
-│   │   └── availability.css  # Availability grid styles
-│   ├── js/
-│   │   ├── app.js            # Main application logic
-│   │   ├── api.js            # API helper functions
-│   │   └── components/
-│   │       ├── profile.js    # Profile component
-│   │       └── availability.js # Availability component
-│   └── index.html            # Main HTML shell
-├── server/
-│   ├── db/
-│   │   └── connection.js     # MongoDB connection
-│   ├── routes/
-│   │   ├── users.js          # Users CRUD routes
-│   │   └── availability.js   # Availability CRUD routes
-│   ├── index.js              # Express server entry
-│   └── seed.js               # Database seeding script
-├── docs/
-│   ├── DESIGN_DOCUMENT.md    # Project design documentation
-│   └── screenshots/          # Application screenshots
-├── .env.example              # Environment template
-├── .eslintrc.json            # ESLint configuration
-├── .prettierrc               # Prettier configuration
-├── .gitignore                # Git ignore rules
-├── package.json              # Project dependencies
-├── LICENSE                   # MIT License
-└── README.md                 # This file
-```
+| Method   | Endpoint                          | Description           |
+| -------- | --------------------------------- | --------------------- |
+| `GET`    | `/api/requests`                   | Get all requests      |
+| `GET`    | `/api/requests/:id`               | Get request by ID     |
+| `GET`    | `/api/requests/sent/:user_id`     | Get sent requests     |
+| `GET`    | `/api/requests/received/:user_id` | Get received requests |
+| `GET`    | `/api/requests/project/:id`       | Get project requests  |
+| `POST`   | `/api/requests`                   | Create request        |
+| `PUT`    | `/api/requests/:id/status`        | Update request status |
+| `DELETE` | `/api/requests/:id`               | Delete request        |
 
 ---
 
@@ -302,7 +249,7 @@ SkillSync/
 
 ## Course Information
 
-- **Course:** Web Development - Spring 2026
+- **Course:** [Web Development - Spring 2026](https://northeastern.instructure.com/courses/245751)
 - **Institution:** Northeastern University
 - **Instructor:** John Alexis Guerra Gomez
 
@@ -311,14 +258,6 @@ SkillSync/
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- MongoDB Atlas for free database hosting
-- Render for free web hosting
-- Northeastern University Web Development course
 
 ---
 
