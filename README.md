@@ -57,19 +57,19 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ### Home Page
 
-![Home Page](docs/wireframes/01_home.png)
+![Home Page](docs/wireframes/01_home.jpg)
 
 ### Profile Creation
 
-![Profile Creation](docs/wireframes/02_profile.png)
+![Profile Creation](docs/wireframes/02_profile.jpg)
 
 ### Availability Grid
 
-![Availability Grid](docs/wireframes/03_vailability.png)
+![Availability Grid](docs/wireframes/03_vailability.jpg)
 
 ### Browse Partners
 
-![Browse Partners](docs/wireframes/06_browse_partners.png)
+![Browse Partners](docs/wireframes/06_browse_partners.jpg)
 
 ---
 
