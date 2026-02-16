@@ -283,7 +283,6 @@ export function initBrowseHandlers() {
 
       const toUserId = e.target.getAttribute('data-send-request');
       const projectId = e.target.getAttribute('data-project');
-      const project = allProjects.find((p) => p._id === projectId);
 
       const message = prompt('Enter a message for your request:');
       if (message !== null) {
