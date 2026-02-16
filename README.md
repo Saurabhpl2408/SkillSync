@@ -50,7 +50,6 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 🔗 **[https://skillsync-fdw0.onrender.com](https://skillsync-fdw0.onrender.com)**
 
-> Note: Free tier may take ~30 seconds to wake up on first visit.
 
 ---
 
@@ -58,19 +57,19 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ### Home Page
 
-![Home Page](docs/wireframes/home.png)
+![Home Page](docs/wireframes/01_home.png)
 
 ### Profile Creation
 
-![Profile Creation](docs/wireframes/profile.png)
+![Profile Creation](docs/wireframes/02_profile.png)
 
 ### Availability Grid
 
-![Availability Grid](docs/wireframes/availability.png)
+![Availability Grid](docs/wireframes/03_vailability.png)
 
 ### Browse Partners
 
-![Browse Partners](docs/wireframes/browse.png)
+![Browse Partners](docs/wireframes/06_browse_partners.png)
 
 ---
 
