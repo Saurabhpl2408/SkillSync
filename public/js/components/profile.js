@@ -1,4 +1,4 @@
-import { createUser, updateUser, getUser } from '../api.js';
+import { createUser, updateUser, deleteUser, getUser } from '../api.js';
 import { setCurrentUser as setAvailabilityUser } from './availability.js';
 
 let currentUser = null;
@@ -74,15 +74,25 @@ export async function renderProfile(container) {
 
         <div class="form-group">
           <label>Work Style Preferences</label>
+          
+          <p class="work-style-label">When do you prefer to work?</p>
           <div class="work-style-options">
             <div class="work-style-option ${currentUser?.work_style?.schedule === 'morning' ? 'selected' : ''}" data-style="schedule" data-value="morning">
               <strong>🌅 Morning Person</strong>
               <p>Prefer working early in the day</p>
             </div>
+            <div class="work-style-option ${currentUser?.work_style?.schedule === 'afternoon' ? 'selected' : ''}" data-style="schedule" data-value="afternoon">
+              <strong>☀️ Afternoon</strong>
+              <p>Most productive midday</p>
+            </div>
             <div class="work-style-option ${currentUser?.work_style?.schedule === 'night' ? 'selected' : ''}" data-style="schedule" data-value="night">
               <strong>🌙 Night Owl</strong>
               <p>Prefer working late</p>
             </div>
+          </div>
+
+          <p class="work-style-label">How do you prefer to collaborate?</p>
+          <div class="work-style-options">
             <div class="work-style-option ${currentUser?.work_style?.mode === 'remote' ? 'selected' : ''}" data-style="mode" data-value="remote">
               <strong>🏠 Remote</strong>
               <p>Prefer online collaboration</p>
@@ -91,11 +101,34 @@ export async function renderProfile(container) {
               <strong>🏢 In-Person</strong>
               <p>Prefer meeting face-to-face</p>
             </div>
+            <div class="work-style-option ${currentUser?.work_style?.mode === 'hybrid' ? 'selected' : ''}" data-style="mode" data-value="hybrid">
+              <strong>🔄 Hybrid</strong>
+              <p>Mix of both works for me</p>
+            </div>
+          </div>
+
+          <p class="work-style-label">How do you approach deadlines?</p>
+          <div class="work-style-options">
+            <div class="work-style-option ${currentUser?.work_style?.deadline === 'early' ? 'selected' : ''}" data-style="deadline" data-value="early">
+              <strong>📅 Early Finisher</strong>
+              <p>Complete tasks ahead of deadline</p>
+            </div>
+            <div class="work-style-option ${currentUser?.work_style?.deadline === 'steady' ? 'selected' : ''}" data-style="deadline" data-value="steady">
+              <strong>⏰ Steady Pace</strong>
+              <p>Work consistently throughout</p>
+            </div>
+            <div class="work-style-option ${currentUser?.work_style?.deadline === 'last-minute' ? 'selected' : ''}" data-style="deadline" data-value="last-minute">
+              <strong>🔥 Last Minute</strong>
+              <p>Work best under pressure</p>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn">${currentUser ? 'Update Profile' : 'Create Profile'}</button>
-        ${currentUser ? '<button type="button" class="btn btn-danger" id="logout-btn">Logout</button>' : ''}
+        <div class="form-actions">
+          <button type="submit" class="btn">${currentUser ? 'Update Profile' : 'Create Profile'}</button>
+          ${currentUser ? '<button type="button" class="btn btn-secondary" id="logout-btn">Logout</button>' : ''}
+          ${currentUser ? '<button type="button" class="btn btn-danger" id="delete-profile-btn">Delete Profile</button>' : ''}
+        </div>
       </form>
     </div>
   `;
@@ -107,6 +140,7 @@ export function initProfileHandlers() {
   const addSkillBtn = document.getElementById('add-skill-btn');
   const skillsContainer = document.getElementById('skills-container');
   const logoutBtn = document.getElementById('logout-btn');
+  const deleteBtn = document.getElementById('delete-profile-btn');
 
   addSkillBtn.addEventListener('click', () => {
     const skill = skillInput.value.trim();
@@ -152,6 +186,33 @@ export function initProfileHandlers() {
     });
   }
 
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      const confirmDelete = confirm(
+        'Are you sure you want to delete your profile? This action cannot be undone. All your projects, availability, and requests will also be deleted.'
+      );
+
+      if (confirmDelete) {
+        const doubleConfirm = confirm(
+          'This is your final warning. Delete profile permanently?'
+        );
+
+        if (doubleConfirm) {
+          try {
+            await deleteUser(currentUser._id);
+            localStorage.removeItem('currentUserId');
+            currentUser = null;
+            skills = [];
+            alert('Profile deleted successfully.');
+            window.location.reload();
+          } catch (error) {
+            alert('Error deleting profile: ' + error.message);
+          }
+        }
+      }
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -179,6 +240,7 @@ export function initProfileHandlers() {
         localStorage.setItem('currentUserId', newUser._id);
         setAvailabilityUser(newUser._id);
         alert('Profile created! You are now logged in.');
+        window.location.reload();
       }
     } catch (error) {
       alert('Error saving profile: ' + error.message);
