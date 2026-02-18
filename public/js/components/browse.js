@@ -7,6 +7,12 @@ function getCurrentUserId() {
   return localStorage.getItem('currentUserId');
 }
 
+function formatHour(hour) {
+  if (hour === 12) return '12 PM';
+  if (hour > 12) return `${hour - 12} PM`;
+  return `${hour} AM`;
+}
+
 export async function renderBrowse(container) {
   const currentUserId = getCurrentUserId();
 
@@ -14,7 +20,7 @@ export async function renderBrowse(container) {
     <div class="browse-container">
       <h2>Browse Partners</h2>
 
-      ${!currentUserId ? '<p class="warning-message">⚠️ Create a profile to send partner requests.</p>' : ''}
+      ${!currentUserId ? '<p class="warning-message">⚠️ Create a profile to send partner requests and see schedule overlaps.</p>' : ''}
 
       <div class="browse-filters card">
         <div class="filter-group">
@@ -174,8 +180,9 @@ async function loadUsers(skillFilter = '', projectId = '') {
             user.work_style
               ? `
             <div class="work-style-info">
-              ${user.work_style.time_preference ? `<span class="work-badge">${user.work_style.time_preference}</span>` : ''}
-              ${user.work_style.work_mode ? `<span class="work-badge">${user.work_style.work_mode}</span>` : ''}
+              ${user.work_style.schedule ? `<span class="work-badge">${user.work_style.schedule}</span>` : ''}
+              ${user.work_style.mode ? `<span class="work-badge">${user.work_style.mode}</span>` : ''}
+              ${user.work_style.deadline ? `<span class="work-badge">${user.work_style.deadline}</span>` : ''}
             </div>
           `
               : ''
@@ -241,15 +248,21 @@ export function initBrowseHandlers() {
 
     if (e.target.matches('[data-view-availability]')) {
       const userId = e.target.getAttribute('data-view-availability');
+
       try {
-        const slots = await getAvailability(userId);
+        const partnerSlots = await getAvailability(userId);
         const user = allUsers.find((u) => u._id === userId);
 
-        if (slots.length === 0) {
+        if (partnerSlots.length === 0) {
           alert(
             `${user?.name || 'This user'} has not set their availability yet.`
           );
           return;
+        }
+
+        let mySlots = [];
+        if (currentUserId) {
+          mySlots = await getAvailability(currentUserId);
         }
 
         const days = [
@@ -261,23 +274,91 @@ export function initBrowseHandlers() {
           'Saturday',
           'Sunday',
         ];
-        const availabilityByDay = {};
-        days.forEach((day) => (availabilityByDay[day] = []));
 
-        slots.forEach((slot) => {
-          if (availabilityByDay[slot.day]) {
-            availabilityByDay[slot.day].push(
-              `${slot.start_hour}:00 - ${slot.end_hour}:00`
-            );
-          }
-        });
+        const partnerAvailability = {};
+        const myAvailability = {};
+        const overlap = {};
 
-        let message = `${user?.name || 'User'}'s Availability:\n\n`;
         days.forEach((day) => {
-          if (availabilityByDay[day].length > 0) {
-            message += `${day}: ${availabilityByDay[day].join(', ')}\n`;
+          partnerAvailability[day] = [];
+          myAvailability[day] = [];
+          overlap[day] = [];
+        });
+
+        partnerSlots.forEach((slot) => {
+          if (partnerAvailability[slot.day]) {
+            partnerAvailability[slot.day].push(slot.start_hour);
           }
         });
+
+        mySlots.forEach((slot) => {
+          if (myAvailability[slot.day]) {
+            myAvailability[slot.day].push(slot.start_hour);
+          }
+        });
+
+        days.forEach((day) => {
+          partnerAvailability[day].forEach((hour) => {
+            if (myAvailability[day].includes(hour)) {
+              overlap[day].push(hour);
+            }
+          });
+        });
+
+        let message = `📅 ${user?.name || 'User'}'s Availability:\n`;
+        message += `${'─'.repeat(40)}\n\n`;
+
+        let partnerHasAvailability = false;
+        days.forEach((day) => {
+          if (partnerAvailability[day].length > 0) {
+            partnerHasAvailability = true;
+            const times = partnerAvailability[day]
+              .sort((a, b) => a - b)
+              .map((h) => formatHour(h))
+              .join(', ');
+            message += `${day}: ${times}\n`;
+          }
+        });
+
+        if (!partnerHasAvailability) {
+          message += `No availability set.\n`;
+        }
+
+        if (currentUserId && mySlots.length > 0) {
+          message += `\n${'─'.repeat(40)}\n`;
+          message += `✅ OVERLAPPING TIMES (Both Available):\n`;
+          message += `${'─'.repeat(40)}\n\n`;
+
+          let hasOverlap = false;
+          let totalOverlapHours = 0;
+
+          days.forEach((day) => {
+            if (overlap[day].length > 0) {
+              hasOverlap = true;
+              totalOverlapHours += overlap[day].length;
+              const times = overlap[day]
+                .sort((a, b) => a - b)
+                .map((h) => formatHour(h))
+                .join(', ');
+              message += `${day}: ${times}\n`;
+            }
+          });
+
+          if (hasOverlap) {
+            message += `\n${'─'.repeat(40)}\n`;
+            message += `Total overlapping hours: ${totalOverlapHours} hour(s)\n`;
+            message += `Great match for scheduling! 🎉`;
+          } else {
+            message += `❌ No overlapping availability found.\n`;
+            message += `You may need to coordinate different times.`;
+          }
+        } else if (currentUserId && mySlots.length === 0) {
+          message += `\n${'─'.repeat(40)}\n`;
+          message += `ℹ️ Set your availability to see schedule overlaps!`;
+        } else {
+          message += `\n${'─'.repeat(40)}\n`;
+          message += `ℹ️ Create a profile to compare schedules!`;
+        }
 
         alert(message);
       } catch (error) {
@@ -297,7 +378,6 @@ export function initBrowseHandlers() {
       const message = prompt('Enter a message for your request:');
       if (message !== null) {
         try {
-          const project = allProjects.find((p) => p._id === projectId);
           const response = await fetch('/api/requests', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
