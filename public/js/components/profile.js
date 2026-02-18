@@ -1,12 +1,41 @@
-import { createUser, updateUser } from '../api.js';
+import { createUser, updateUser, getUser } from '../api.js';
+import { setCurrentUser as setAvailabilityUser } from './availability.js';
 
 let currentUser = null;
 let skills = [];
 
-export function renderProfile(container) {
+export async function loadCurrentUser() {
+  const userId = localStorage.getItem('currentUserId');
+  if (userId) {
+    try {
+      currentUser = await getUser(userId);
+      skills = currentUser.skills || [];
+      return currentUser;
+    } catch (error) {
+      console.error('Error loading user:', error);
+      localStorage.removeItem('currentUserId');
+      currentUser = null;
+      skills = [];
+    }
+  }
+  return null;
+}
+
+export function getCurrentUser() {
+  return currentUser;
+}
+
+export function getCurrentUserId() {
+  return localStorage.getItem('currentUserId');
+}
+
+export async function renderProfile(container) {
+  await loadCurrentUser();
+
   container.innerHTML = `
     <div class="card profile-form">
       <h2>${currentUser ? 'Edit Profile' : 'Create Profile'}</h2>
+      ${currentUser ? `<p class="current-user-info">Logged in as: <strong>${currentUser.name}</strong> (${currentUser.email})</p>` : ''}
       <form id="profile-form">
         <div class="form-group">
           <label for="name">Full Name</label>
@@ -46,19 +75,19 @@ export function renderProfile(container) {
         <div class="form-group">
           <label>Work Style Preferences</label>
           <div class="work-style-options">
-            <div class="work-style-option" data-style="schedule" data-value="morning">
+            <div class="work-style-option ${currentUser?.work_style?.schedule === 'morning' ? 'selected' : ''}" data-style="schedule" data-value="morning">
               <strong>🌅 Morning Person</strong>
               <p>Prefer working early in the day</p>
             </div>
-            <div class="work-style-option" data-style="schedule" data-value="night">
+            <div class="work-style-option ${currentUser?.work_style?.schedule === 'night' ? 'selected' : ''}" data-style="schedule" data-value="night">
               <strong>🌙 Night Owl</strong>
               <p>Prefer working late</p>
             </div>
-            <div class="work-style-option" data-style="mode" data-value="remote">
+            <div class="work-style-option ${currentUser?.work_style?.mode === 'remote' ? 'selected' : ''}" data-style="mode" data-value="remote">
               <strong>🏠 Remote</strong>
               <p>Prefer online collaboration</p>
             </div>
-            <div class="work-style-option" data-style="mode" data-value="in-person">
+            <div class="work-style-option ${currentUser?.work_style?.mode === 'in-person' ? 'selected' : ''}" data-style="mode" data-value="in-person">
               <strong>🏢 In-Person</strong>
               <p>Prefer meeting face-to-face</p>
             </div>
@@ -66,6 +95,7 @@ export function renderProfile(container) {
         </div>
 
         <button type="submit" class="btn">${currentUser ? 'Update Profile' : 'Create Profile'}</button>
+        ${currentUser ? '<button type="button" class="btn btn-danger" id="logout-btn">Logout</button>' : ''}
       </form>
     </div>
   `;
@@ -76,6 +106,7 @@ export function initProfileHandlers() {
   const skillInput = document.getElementById('skill-input');
   const addSkillBtn = document.getElementById('add-skill-btn');
   const skillsContainer = document.getElementById('skills-container');
+  const logoutBtn = document.getElementById('logout-btn');
 
   addSkillBtn.addEventListener('click', () => {
     const skill = skillInput.value.trim();
@@ -111,6 +142,16 @@ export function initProfileHandlers() {
     });
   });
 
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('currentUserId');
+      currentUser = null;
+      skills = [];
+      alert('Logged out successfully!');
+      window.location.reload();
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -135,7 +176,9 @@ export function initProfileHandlers() {
       } else {
         const newUser = await createUser(userData);
         currentUser = newUser;
-        alert('Profile created!');
+        localStorage.setItem('currentUserId', newUser._id);
+        setAvailabilityUser(newUser._id);
+        alert('Profile created! You are now logged in.');
       }
     } catch (error) {
       alert('Error saving profile: ' + error.message);

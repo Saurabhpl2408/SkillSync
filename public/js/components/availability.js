@@ -1,4 +1,5 @@
 import {
+  getAvailability,
   createAvailabilityBulk,
   deleteUserAvailability,
 } from '../api.js';
@@ -17,11 +18,13 @@ const HOURS = Array.from({ length: 14 }, (_, i) => i + 8);
 let selectedSlots = new Set();
 let currentUserId = null;
 
-export function renderAvailability(container) {
+export async function renderAvailability(container) {
+  currentUserId = localStorage.getItem('currentUserId');
+
   container.innerHTML = `
     <div class="card">
       <h2>Set Your Availability</h2>
-      <p>Click on time slots when you're available to work with partners.</p>
+      ${!currentUserId ? '<p class="warning-message">⚠️ Please create a profile first to save your availability.</p>' : '<p>Click on time slots when you are available to work with partners.</p>'}
       
       <div class="availability-grid" id="availability-grid">
         <div class="header"></div>
@@ -51,10 +54,37 @@ export function renderAvailability(container) {
       </div>
 
       <br>
-      <button class="btn" id="save-availability">Save Availability</button>
+      <button class="btn" id="save-availability" ${!currentUserId ? 'disabled' : ''}>Save Availability</button>
       <button class="btn btn-danger" id="clear-availability">Clear All</button>
     </div>
   `;
+
+  if (currentUserId) {
+    await loadExistingAvailability();
+  }
+}
+
+async function loadExistingAvailability() {
+  try {
+    const slots = await getAvailability(currentUserId);
+    selectedSlots.clear();
+
+    slots.forEach((slot) => {
+      const key = `${slot.day}-${slot.start_hour}`;
+      selectedSlots.add(key);
+
+      const slotElement = document.querySelector(
+        `.slot[data-day="${slot.day}"][data-hour="${slot.start_hour}"]`
+      );
+      if (slotElement) {
+        slotElement.classList.add('selected');
+      }
+    });
+
+    console.log(`Loaded ${slots.length} availability slots for user`);
+  } catch (error) {
+    console.error('Error loading availability:', error);
+  }
 }
 
 export function initAvailabilityHandlers() {
@@ -79,6 +109,8 @@ export function initAvailabilityHandlers() {
   });
 
   saveBtn.addEventListener('click', async () => {
+    currentUserId = localStorage.getItem('currentUserId');
+
     if (!currentUserId) {
       alert('Please create a profile first!');
       return;
@@ -121,4 +153,5 @@ function formatHour(hour) {
 
 export function setCurrentUser(userId) {
   currentUserId = userId;
+  localStorage.setItem('currentUserId', userId);
 }
