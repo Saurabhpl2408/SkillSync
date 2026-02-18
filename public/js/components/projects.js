@@ -7,18 +7,25 @@ import {
   getUsers,
 } from '../api.js';
 
-let currentUserId = localStorage.getItem('currentUserId') || null;
 let skillsHave = [];
 let skillsNeed = [];
 let editingProjectId = null;
 
+function getCurrentUserId() {
+  return localStorage.getItem('currentUserId');
+}
+
 export function renderProjects(container) {
+  const currentUserId = getCurrentUserId();
+
   container.innerHTML = `
     <div class="projects-container">
       <div class="projects-header">
         <h2>Projects</h2>
-        <button class="btn" id="show-create-form">Create New Project</button>
+        <button class="btn" id="show-create-form" ${!currentUserId ? 'disabled' : ''}>Create New Project</button>
       </div>
+
+      ${!currentUserId ? '<p class="warning-message">⚠️ Please create a profile first to create or join projects.</p>' : ''}
 
       <div class="project-form-container card" id="project-form-container" style="display: none;">
         <h3 id="form-title">Create New Project</h3>
@@ -86,6 +93,7 @@ export function renderProjects(container) {
 
 async function loadProjects(status = '') {
   const projectsList = document.getElementById('projects-list');
+  const currentUserId = getCurrentUserId();
 
   try {
     const projects = await getProjects(status);
@@ -107,6 +115,8 @@ async function loadProjects(status = '') {
     projectsList.innerHTML = projects
       .map((project) => {
         const owner = usersMap[project.owner_id] || { name: 'Unknown User' };
+        const isOwner = currentUserId && project.owner_id === currentUserId;
+
         return `
         <div class="card project-card" data-id="${project._id}">
           <div class="project-header">
@@ -114,7 +124,7 @@ async function loadProjects(status = '') {
             <span class="status-badge status-${project.status}">${project.status}</span>
           </div>
           <p class="project-description">${project.description || 'No description provided'}</p>
-          <p class="project-owner">Posted by: ${owner.name}</p>
+          <p class="project-owner">Posted by: ${owner.name}${isOwner ? ' (You)' : ''}</p>
           
           <div class="skill-gap-analysis">
             <div class="skills-section">
@@ -149,13 +159,13 @@ async function loadProjects(status = '') {
 
           <div class="project-actions">
             ${
-              project.owner_id === currentUserId
+              isOwner
                 ? `
               <button class="btn btn-small" data-edit="${project._id}">Edit</button>
               <button class="btn btn-small btn-danger" data-delete="${project._id}">Delete</button>
             `
                 : `
-              <button class="btn btn-small" data-apply="${project._id}" data-owner="${project.owner_id}">Apply to Join</button>
+              <button class="btn btn-small" data-apply="${project._id}" data-owner="${project.owner_id}" ${!currentUserId ? 'disabled' : ''}>Apply to Join</button>
             `
             }
           </div>
@@ -177,6 +187,11 @@ export function initProjectsHandlers() {
   const projectsList = document.getElementById('projects-list');
 
   showFormBtn.addEventListener('click', () => {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) {
+      alert('Please create a profile first!');
+      return;
+    }
     resetForm();
     formContainer.style.display = 'block';
     showFormBtn.style.display = 'none';
@@ -198,14 +213,12 @@ export function initProjectsHandlers() {
     }
   });
 
-  document
-    .getElementById('skill-have-input')
-    .addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('add-skill-have').click();
-      }
-    });
+  document.getElementById('skill-have-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('add-skill-have').click();
+    }
+  });
 
   document.getElementById('add-skill-need').addEventListener('click', () => {
     const input = document.getElementById('skill-need-input');
@@ -217,37 +230,32 @@ export function initProjectsHandlers() {
     }
   });
 
-  document
-    .getElementById('skill-need-input')
-    .addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('add-skill-need').click();
-      }
-    });
+  document.getElementById('skill-need-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('add-skill-need').click();
+    }
+  });
 
-  document
-    .getElementById('skills-have-container')
-    .addEventListener('click', (e) => {
-      if (e.target.matches('[data-remove-have]')) {
-        const skill = e.target.getAttribute('data-remove-have');
-        skillsHave = skillsHave.filter((s) => s !== skill);
-        renderSkillsHave();
-      }
-    });
+  document.getElementById('skills-have-container').addEventListener('click', (e) => {
+    if (e.target.matches('[data-remove-have]')) {
+      const skill = e.target.getAttribute('data-remove-have');
+      skillsHave = skillsHave.filter((s) => s !== skill);
+      renderSkillsHave();
+    }
+  });
 
-  document
-    .getElementById('skills-need-container')
-    .addEventListener('click', (e) => {
-      if (e.target.matches('[data-remove-need]')) {
-        const skill = e.target.getAttribute('data-remove-need');
-        skillsNeed = skillsNeed.filter((s) => s !== skill);
-        renderSkillsNeed();
-      }
-    });
+  document.getElementById('skills-need-container').addEventListener('click', (e) => {
+    if (e.target.matches('[data-remove-need]')) {
+      const skill = e.target.getAttribute('data-remove-need');
+      skillsNeed = skillsNeed.filter((s) => s !== skill);
+      renderSkillsNeed();
+    }
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const currentUserId = getCurrentUserId();
 
     if (!currentUserId) {
       alert('Please create a profile first!');
@@ -288,6 +296,8 @@ export function initProjectsHandlers() {
   });
 
   projectsList.addEventListener('click', async (e) => {
+    const currentUserId = getCurrentUserId();
+
     if (e.target.matches('[data-delete]')) {
       const projectId = e.target.getAttribute('data-delete');
       if (confirm('Are you sure you want to delete this project?')) {
@@ -309,8 +319,7 @@ export function initProjectsHandlers() {
         document.getElementById('form-title').textContent = 'Edit Project';
         document.getElementById('submit-btn').textContent = 'Update Project';
         document.getElementById('project-title').value = project.title;
-        document.getElementById('project-description').value =
-          project.description || '';
+        document.getElementById('project-description').value = project.description || '';
         document.getElementById('project-status').value = project.status;
         document.getElementById('status-group').style.display = 'block';
         skillsHave = project.skills_have || [];
@@ -325,13 +334,13 @@ export function initProjectsHandlers() {
     }
 
     if (e.target.matches('[data-apply]')) {
-      const projectId = e.target.getAttribute('data-apply');
-      const ownerId = e.target.getAttribute('data-owner');
-
       if (!currentUserId) {
         alert('Please create a profile first!');
         return;
       }
+
+      const projectId = e.target.getAttribute('data-apply');
+      const ownerId = e.target.getAttribute('data-owner');
 
       if (currentUserId === ownerId) {
         alert('You cannot apply to your own project!');
@@ -403,9 +412,4 @@ function resetForm() {
   skillsNeed = [];
   renderSkillsHave();
   renderSkillsNeed();
-}
-
-export function setCurrentUserId(userId) {
-  currentUserId = userId;
-  localStorage.setItem('currentUserId', userId);
 }

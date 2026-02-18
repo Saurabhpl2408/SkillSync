@@ -4,14 +4,21 @@ import {
   getAvailability,
 } from '../api.js';
 
-let currentUserId = localStorage.getItem('currentUserId') || null;
 let allUsers = [];
 let allProjects = [];
 
+function getCurrentUserId() {
+  return localStorage.getItem('currentUserId');
+}
+
 export async function renderBrowse(container) {
+  const currentUserId = getCurrentUserId();
+
   container.innerHTML = `
     <div class="browse-container">
       <h2>Browse Partners</h2>
+
+      ${!currentUserId ? '<p class="warning-message">⚠️ Create a profile to send partner requests.</p>' : ''}
 
       <div class="browse-filters card">
         <div class="filter-group">
@@ -44,11 +51,15 @@ export async function renderBrowse(container) {
 }
 
 async function loadFilters() {
+  const currentUserId = getCurrentUserId();
+
   try {
     allProjects = await getProjects('open');
     const projectFilter = document.getElementById('project-filter');
 
-    const myProjects = allProjects.filter((p) => p.owner_id === currentUserId);
+    const myProjects = currentUserId
+      ? allProjects.filter((p) => p.owner_id === currentUserId)
+      : [];
 
     myProjects.forEach((project) => {
       const option = document.createElement('option');
@@ -64,6 +75,7 @@ async function loadFilters() {
 async function loadUsers(skillFilter = '', projectId = '') {
   const usersGrid = document.getElementById('users-grid');
   const skillGapDisplay = document.getElementById('skill-gap-display');
+  const currentUserId = getCurrentUserId();
 
   try {
     allUsers = await getUsers();
@@ -72,9 +84,7 @@ async function loadUsers(skillFilter = '', projectId = '') {
     if (skillFilter) {
       const searchSkill = skillFilter.toLowerCase();
       filteredUsers = filteredUsers.filter((user) =>
-        (user.skills || []).some((skill) =>
-          skill.toLowerCase().includes(searchSkill)
-        )
+        (user.skills || []).some((skill) => skill.toLowerCase().includes(searchSkill))
       );
     }
 
@@ -184,7 +194,7 @@ async function loadUsers(skillFilter = '', projectId = '') {
           <div class="user-actions">
             <button class="btn btn-small" data-view-availability="${user._id}">View Availability</button>
             ${
-              projectId
+              projectId && currentUserId
                 ? `
               <button class="btn btn-small" data-send-request="${user._id}" data-project="${projectId}">Send Request</button>
             `
@@ -229,6 +239,8 @@ export function initBrowseHandlers() {
   });
 
   usersGrid.addEventListener('click', async (e) => {
+    const currentUserId = getCurrentUserId();
+
     if (e.target.matches('[data-view-availability]')) {
       const userId = e.target.getAttribute('data-view-availability');
       try {
@@ -236,29 +248,17 @@ export function initBrowseHandlers() {
         const user = allUsers.find((u) => u._id === userId);
 
         if (slots.length === 0) {
-          alert(
-            `${user?.name || 'This user'} has not set their availability yet.`
-          );
+          alert(`${user?.name || 'This user'} has not set their availability yet.`);
           return;
         }
 
-        const days = [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          'Sunday',
-        ];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const availabilityByDay = {};
         days.forEach((day) => (availabilityByDay[day] = []));
 
         slots.forEach((slot) => {
           if (availabilityByDay[slot.day]) {
-            availabilityByDay[slot.day].push(
-              `${slot.start_hour}:00 - ${slot.end_hour}:00`
-            );
+            availabilityByDay[slot.day].push(`${slot.start_hour}:00 - ${slot.end_hour}:00`);
           }
         });
 
@@ -287,6 +287,7 @@ export function initBrowseHandlers() {
       const message = prompt('Enter a message for your request:');
       if (message !== null) {
         try {
+          const project = allProjects.find((p) => p._id === projectId);
           const response = await fetch('/api/requests', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -309,9 +310,4 @@ export function initBrowseHandlers() {
       }
     }
   });
-}
-
-export function setCurrentUserId(userId) {
-  currentUserId = userId;
-  localStorage.setItem('currentUserId', userId);
 }

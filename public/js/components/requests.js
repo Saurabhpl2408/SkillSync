@@ -8,12 +8,18 @@ import {
   getProjects,
 } from '../api.js';
 
-let currentUserId = localStorage.getItem('currentUserId') || null;
+function getCurrentUserId() {
+  return localStorage.getItem('currentUserId');
+}
 
 export function renderRequests(container) {
+  const currentUserId = getCurrentUserId();
+
   container.innerHTML = `
     <div class="requests-container">
       <h2>Partner Requests</h2>
+
+      ${!currentUserId ? '<p class="warning-message">⚠️ Please create a profile to see your requests.</p>' : ''}
 
       <div class="requests-tabs">
         <button class="tab-btn active" data-tab="received">Received</button>
@@ -42,6 +48,7 @@ export function renderRequests(container) {
 
 async function loadRequests(tab, status = '') {
   const requestsList = document.getElementById('requests-list');
+  const currentUserId = getCurrentUserId();
 
   if (!currentUserId && tab !== 'all') {
     requestsList.innerHTML = `
@@ -55,9 +62,9 @@ async function loadRequests(tab, status = '') {
 
   try {
     let requests;
-    if (tab === 'received') {
+    if (tab === 'received' && currentUserId) {
       requests = await getReceivedRequests(currentUserId);
-    } else if (tab === 'sent') {
+    } else if (tab === 'sent' && currentUserId) {
       requests = await getSentRequests(currentUserId);
     } else {
       requests = await getRequests(status);
@@ -91,16 +98,12 @@ async function loadRequests(tab, status = '') {
 
     requestsList.innerHTML = requests
       .map((request) => {
-        const fromUser = usersMap[request.from_user_id] || {
-          name: 'Unknown User',
-        };
+        const fromUser = usersMap[request.from_user_id] || { name: 'Unknown User' };
         const toUser = usersMap[request.to_user_id] || { name: 'Unknown User' };
-        const project = projectsMap[request.project_id] || {
-          title: 'Unknown Project',
-        };
+        const project = projectsMap[request.project_id] || { title: 'Unknown Project' };
 
-        const isReceived = request.to_user_id === currentUserId;
-        const isSent = request.from_user_id === currentUserId;
+        const isReceived = currentUserId && request.to_user_id === currentUserId;
+        const isSent = currentUserId && request.from_user_id === currentUserId;
 
         return `
         <div class="card request-card">
@@ -217,9 +220,4 @@ export function initRequestsHandlers() {
       }
     }
   });
-}
-
-export function setCurrentUserId(userId) {
-  currentUserId = userId;
-  localStorage.setItem('currentUserId', userId);
 }
