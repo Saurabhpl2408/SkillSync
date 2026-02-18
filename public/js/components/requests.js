@@ -98,11 +98,16 @@ async function loadRequests(tab, status = '') {
 
     requestsList.innerHTML = requests
       .map((request) => {
-        const fromUser = usersMap[request.from_user_id] || { name: 'Unknown User' };
+        const fromUser = usersMap[request.from_user_id] || {
+          name: 'Unknown User',
+        };
         const toUser = usersMap[request.to_user_id] || { name: 'Unknown User' };
-        const project = projectsMap[request.project_id] || { title: 'Unknown Project' };
+        const project = projectsMap[request.project_id] || {
+          title: 'Unknown Project',
+        };
 
-        const isReceived = currentUserId && request.to_user_id === currentUserId;
+        const isReceived =
+          currentUserId && request.to_user_id === currentUserId;
         const isSent = currentUserId && request.from_user_id === currentUserId;
 
         return `

@@ -213,12 +213,14 @@ export function initProjectsHandlers() {
     }
   });
 
-  document.getElementById('skill-have-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('add-skill-have').click();
-    }
-  });
+  document
+    .getElementById('skill-have-input')
+    .addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-skill-have').click();
+      }
+    });
 
   document.getElementById('add-skill-need').addEventListener('click', () => {
     const input = document.getElementById('skill-need-input');
@@ -230,28 +232,34 @@ export function initProjectsHandlers() {
     }
   });
 
-  document.getElementById('skill-need-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('add-skill-need').click();
-    }
-  });
+  document
+    .getElementById('skill-need-input')
+    .addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-skill-need').click();
+      }
+    });
 
-  document.getElementById('skills-have-container').addEventListener('click', (e) => {
-    if (e.target.matches('[data-remove-have]')) {
-      const skill = e.target.getAttribute('data-remove-have');
-      skillsHave = skillsHave.filter((s) => s !== skill);
-      renderSkillsHave();
-    }
-  });
+  document
+    .getElementById('skills-have-container')
+    .addEventListener('click', (e) => {
+      if (e.target.matches('[data-remove-have]')) {
+        const skill = e.target.getAttribute('data-remove-have');
+        skillsHave = skillsHave.filter((s) => s !== skill);
+        renderSkillsHave();
+      }
+    });
 
-  document.getElementById('skills-need-container').addEventListener('click', (e) => {
-    if (e.target.matches('[data-remove-need]')) {
-      const skill = e.target.getAttribute('data-remove-need');
-      skillsNeed = skillsNeed.filter((s) => s !== skill);
-      renderSkillsNeed();
-    }
-  });
+  document
+    .getElementById('skills-need-container')
+    .addEventListener('click', (e) => {
+      if (e.target.matches('[data-remove-need]')) {
+        const skill = e.target.getAttribute('data-remove-need');
+        skillsNeed = skillsNeed.filter((s) => s !== skill);
+        renderSkillsNeed();
+      }
+    });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -319,7 +327,8 @@ export function initProjectsHandlers() {
         document.getElementById('form-title').textContent = 'Edit Project';
         document.getElementById('submit-btn').textContent = 'Update Project';
         document.getElementById('project-title').value = project.title;
-        document.getElementById('project-description').value = project.description || '';
+        document.getElementById('project-description').value =
+          project.description || '';
         document.getElementById('project-status').value = project.status;
         document.getElementById('status-group').style.display = 'block';
         skillsHave = project.skills_have || [];

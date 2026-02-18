@@ -1,8 +1,4 @@
-import {
-  getUsers,
-  getProjects,
-  getAvailability,
-} from '../api.js';
+import { getUsers, getProjects, getAvailability } from '../api.js';
 
 let allUsers = [];
 let allProjects = [];
@@ -84,7 +80,9 @@ async function loadUsers(skillFilter = '', projectId = '') {
     if (skillFilter) {
       const searchSkill = skillFilter.toLowerCase();
       filteredUsers = filteredUsers.filter((user) =>
-        (user.skills || []).some((skill) => skill.toLowerCase().includes(searchSkill))
+        (user.skills || []).some((skill) =>
+          skill.toLowerCase().includes(searchSkill)
+        )
       );
     }
 
@@ -248,17 +246,29 @@ export function initBrowseHandlers() {
         const user = allUsers.find((u) => u._id === userId);
 
         if (slots.length === 0) {
-          alert(`${user?.name || 'This user'} has not set their availability yet.`);
+          alert(
+            `${user?.name || 'This user'} has not set their availability yet.`
+          );
           return;
         }
 
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const days = [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+          'Sunday',
+        ];
         const availabilityByDay = {};
         days.forEach((day) => (availabilityByDay[day] = []));
 
         slots.forEach((slot) => {
           if (availabilityByDay[slot.day]) {
-            availabilityByDay[slot.day].push(`${slot.start_hour}:00 - ${slot.end_hour}:00`);
+            availabilityByDay[slot.day].push(
+              `${slot.start_hour}:00 - ${slot.end_hour}:00`
+            );
           }
         });
 
