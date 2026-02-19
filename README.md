@@ -9,20 +9,6 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Live Demo](#live-demo)
-- [Screenshots](#screenshots)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Team](#team)
-- [License](#license)
-
----
-
 ## Overview
 
 **SkillSync** is a web application designed to solve the common problem of unbalanced project teams in academic settings. Instead of forming teams based on existing friendships (which often leads to skill gaps), SkillSync matches students based on:
@@ -33,15 +19,11 @@
 
 ### The Problem
 
-Students often form project teams with friends, leading to scenarios like:
-
-- Three frontend developers, no one for backend
-- Team members with incompatible schedules
-- Skill overlap causing role conflicts
+Students often form project teams with friends, leading to scenarios like three frontend developers with no one for backend, team members with incompatible schedules, and skill overlap causing role conflicts.
 
 ### The Solution
 
-SkillSync provides skill gap analysis, availability visualization, and intelligent matching to build balanced, effective project teams.
+SkillSync provides skill gap analysis, availability overlap visualization, and intelligent matching to build balanced, effective project teams.
 
 ---
 
@@ -53,41 +35,64 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ## Screenshots
 
-### Home Page
+### Home Page (Logged In)
 
-![Home Page](docs/screenshots/home.png)
+![Home Page Logged In](docs/screenshots/home.jpeg)
 
-### Profile Creation
+### Home Page (Logged Out)
 
-![Profile Creation](docs/screenshots/profile_form.png)
+![Home Page Logged Out](docs/screenshots/home_logged_out.png)
 
-### Project Creation
+### Profile Form (with Work Style Preferences)
 
-![Project Creation](docs/screenshots/projects_page.png)
+![Profile Form](docs/screenshots/profile_form.png)
 
-### Browse Partners
+### Availability Grid
+
+![Availability Grid](docs/screenshots/availability.png)
+
+### Projects Page
+
+![Projects Page](docs/screenshots/projects_page.png)
+
+### Create Project Form
+
+![Create Project](docs/screenshots/create_project.png)
+
+### Browse Partners (Filtered by Skill)
 
 ![Browse Partners](docs/screenshots/browse_partners.png)
 
-### Requests Page
+### Partner Requests (Sent Tab)
 
-![Requests](docs/screenshots/requests.png)
+![Partner Requests](docs/screenshots/requests.png)
+
+### View Partner Availability
+
+![View Availability](docs/screenshots/view_availability.png)
+
+### Schedule Overlap Comparison
+
+![Schedule Overlap](docs/screenshots/schedule_overlap.png)
 
 ---
 
 ## Features
 
-| Feature                    | Description                                                    |
-| -------------------------- | -------------------------------------------------------------- |
-| **User Profiles**          | Create profiles with name, email, GitHub, and technical skills |
-| **Skills Management**      | Add/remove skill tags dynamically                              |
-| **Work Style Preferences** | Select morning/night and remote/in-person preferences          |
-| **Availability Grid**      | Interactive weekly calendar to mark free time slots            |
-| **Project Posts**          | Post project requirements with skills you have and need        |
-| **Skill Gap Analysis**     | Visual comparison of your skills vs. project needs             |
-| **Browse Partners**        | View and filter users by skill, with match ranking             |
-| **Partner Requests**       | Send/accept/decline partnership invitations                    |
-| **Full CRUD Operations**   | Create, Read, Update, Delete across all four collections       |
+| Feature                      | Description                                                              |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| **User Profiles**            | Create profiles with name, email, GitHub, and technical skills           |
+| **Skills Management**        | Add/remove skill tags dynamically                                        |
+| **Work Style Preferences**   | Three dimensions: time preference, collaboration mode, deadline approach |
+| **Availability Grid**        | Interactive weekly calendar (Mon-Sun, 8AM-9PM) to mark free time         |
+| **Availability Persistence** | Saved slots load automatically on return visits                          |
+| **Project Posts**            | Post project requirements with skills you have and skills you need       |
+| **Skill Gap Analysis**       | Visual comparison of your skills vs. project needs with match ranking    |
+| **Browse Partners**          | View and filter users by skill, sorted by match relevance                |
+| **Schedule Overlap**         | Compare your availability with a partner's to find common free times     |
+| **Partner Requests**         | Send/accept/decline partnership invitations with status tracking         |
+| **Session Persistence**      | Login state persists across page navigations via localStorage            |
+| **Full CRUD Operations**     | Create, Read, Update, Delete across all four collections                 |
 
 ---
 
@@ -97,13 +102,13 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 - **Runtime:** Node.js (v18+)
 - **Framework:** Express.js 5
-- **Database:** MongoDB Atlas (Native Driver)
-- **Authentication:** Environment-based secrets
+- **Database:** MongoDB Atlas (Native Driver — no Mongoose)
+- **Secrets:** Environment-based via dotenv
 
 ### Frontend
 
 - **Rendering:** Client-side (Vanilla JavaScript)
-- **Styling:** CSS Modules
+- **Styling:** CSS Modules (one per component)
 - **Architecture:** Single Page Application (SPA)
 
 ### DevOps
@@ -165,11 +170,11 @@ SkillSync provides skill gap analysis, availability visualization, and intellige
 
 ### Available Scripts
 
-| Command        | Description                               |
-| -------------- | ----------------------------------------- |
-| `npm start`    | Start production server                   |
-| `npm run dev`  | Start development server with auto-reload |
-| `npm run seed` | Populate database with sample data        |
+| Command        | Description                                  |
+| -------------- | -------------------------------------------- |
+| `npm start`    | Start production server                      |
+| `npm run dev`  | Start development server with auto-reload    |
+| `npm run seed` | Populate database with 1,000+ sample records |
 
 ---
 
