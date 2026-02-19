@@ -88,61 +88,107 @@ SkillSync is a web application that helps students form balanced project teams b
 
 # Design Mockups
 
-Each page was wireframed during the design phase, then implemented. Below shows the wireframe alongside the final screenshot for each page.
+Each page was wireframed during the design phase, then implemented. Below shows the wireframe followed by the final screenshot for each page.
 
-## Home Page
+## Home Page (Logged In)
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/01_home.png) | ![Screenshot](screenshots/home.jpeg) |
+**Wireframe:**
+
+![Home Page Wireframe](wireframes/01_home.png)
+
+**Final Implementation:**
+
+![Home Page Screenshot](screenshots/home.jpeg)
 
 ## Home Page (Logged Out)
 
-![Logged Out](screenshots/home_logged_out.png)
+**Wireframe:**
+
+![Home Logged Out Wireframe](wireframes/08_home_logged_out.png)
+
+**Final Implementation:**
+
+![Home Logged Out Screenshot](screenshots/home_logged_out.png)
 
 ## Profile Page
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/02_profile.png) | ![Screenshot](screenshots/profile_form.png) |
+**Wireframe:**
+
+![Profile Wireframe](wireframes/02_profile.png)
+
+**Final Implementation:**
+
+![Profile Screenshot](screenshots/profile_form.png)
 
 ## Availability Grid
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/03_availability.png) | ![Screenshot](screenshots/availability.png) |
+**Wireframe:**
+
+![Availability Wireframe](wireframes/03_availability.png)
+
+**Final Implementation:**
+
+![Availability Screenshot](screenshots/availability.png)
 
 ## Projects Page
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/04_projects.png) | ![Screenshot](screenshots/projects_page.png) |
+**Wireframe:**
+
+![Projects Wireframe](wireframes/04_projects.png)
+
+**Final Implementation:**
+
+![Projects Screenshot](screenshots/projects_page.png)
 
 ## Create Project Form
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/05_create_project.png) | ![Screenshot](screenshots/create_project.png) |
+**Wireframe:**
+
+![Create Project Wireframe](wireframes/05_create_project.png)
+
+**Final Implementation:**
+
+![Create Project Screenshot](screenshots/create_project.png)
 
 ## Browse Partners
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/06_browse_partners.png) | ![Screenshot](screenshots/browse_partners.png) |
+**Wireframe:**
+
+![Browse Partners Wireframe](wireframes/06_browse_partners.png)
+
+**Final Implementation:**
+
+![Browse Partners Screenshot](screenshots/browse_partners.png)
 
 ## Requests Page
 
-| Wireframe | Final Implementation |
-|-----------|---------------------|
-| ![Wireframe](wireframes/07_requests.png) | ![Screenshot](screenshots/requests.png) |
+**Wireframe:**
+
+![Requests Wireframe](wireframes/07_requests.png)
+
+**Final Implementation:**
+
+![Requests Screenshot](screenshots/requests.png)
 
 ## View Partner Availability
 
-![View Availability](screenshots/view_availability.png)
+**Wireframe:**
+
+![View Availability Wireframe](wireframes/09_view_availability.png)
+
+**Final Implementation:**
+
+![View Availability Screenshot](screenshots/view_availability.png)
 
 ## Schedule Overlap Comparison
 
-![Schedule Overlap](screenshots/schedule_overlap.png)
+**Wireframe:**
+
+![Schedule Overlap Wireframe](wireframes/10_schedule_overlap.png)
+
+**Final Implementation:**
+
+![Schedule Overlap Screenshot](screenshots/schedule_overlap.png)
 
 ---
 
