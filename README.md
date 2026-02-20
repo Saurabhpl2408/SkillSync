@@ -31,7 +31,7 @@ SkillSync provides skill gap analysis, availability overlap visualization, and i
 
 🔗 **[https://skillsync-fdw0.onrender.com](https://skillsync-fdw0.onrender.com)**
 
----
+
 
 ---
 
@@ -39,7 +39,6 @@ SkillSync provides skill gap analysis, availability overlap visualization, and i
 
 🔗 **[Video Demo](https://northeastern.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=78330501-41cb-4007-a429-b3f700574274&start=10)**
 
----
 
 ---
 
@@ -48,6 +47,13 @@ SkillSync provides skill gap analysis, availability overlap visualization, and i
 🔗 **[PPT](https://docs.google.com/presentation/d/1OFG3E8XzfjstirloZj_t-vbq6RNTTIS6AYM4Gl0KYLU/edit?usp=sharing)**
 
 ---
+
+## Class Link
+
+🔗 **[Class Link](https://northeastern.instructure.com/courses/245751)**
+
+---
+
 
 ## Screenshots
 
