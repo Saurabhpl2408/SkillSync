@@ -33,6 +33,22 @@ SkillSync provides skill gap analysis, availability overlap visualization, and i
 
 ---
 
+---
+
+## Video Demo
+
+🔗 **[Video Demo](https://northeastern.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=78330501-41cb-4007-a429-b3f700574274&start=10)**
+
+---
+
+---
+
+## PPT
+
+🔗 **[PPT](https://docs.google.com/presentation/d/1OFG3E8XzfjstirloZj_t-vbq6RNTTIS6AYM4Gl0KYLU/edit?usp=sharing)**
+
+---
+
 ## Screenshots
 
 ### Home Page (Logged In)
